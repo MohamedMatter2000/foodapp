@@ -1,15 +1,28 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import logo from "../../assets/images/nodata.png";
-
-export default function DeletConfirmation({
-  closePopup,
-  deletcategry,
-  categoryid,
-}) {
+import { useFoodApp } from "../../context/AppFoodProvider";
+export default function DeletConfirmation() {
+  const {
+    deletcategry,
+    categoryid,
+    closePopup,
+    chooseDelete,
+    deletetUsers,
+    deletrecipes,
+    userId,
+    recipeId,
+  } = useFoodApp();
+  console.log(categoryid);
   const deleteItem = () => {
-    deletcategry(categoryid);
-    console.log(categoryid);
+    if (chooseDelete === "categery") {
+      deletcategry(categoryid);
+    } else if (chooseDelete === "recipe") {
+      deletrecipes(recipeId);
+    } else if (chooseDelete === "user") {
+      deletetUsers(userId);
+    }
+
     closePopup();
   };
   return (
@@ -32,7 +45,7 @@ export default function DeletConfirmation({
             <div className="">
               <img src={logo} className="w-75 mx-auto d-block" alt="" />
             </div>
-            <h5 className="w-100 pt-3 text-center">Delete This Category ?</h5>
+            <h5 className="w-100 pt-3 text-center">Delete This Item ?</h5>
             <p className="text-muted w-75 px-3 text-center">
               are you sure you want to delete this item ? if you are sure just
               click on delete it

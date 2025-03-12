@@ -1,10 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Changepass from "../../Authentication/change-pass/Changepass";
+import Changepass from "../../features/Authentication/change-pass/Changepass";
 import Navbar from "../Navbar/Navbar";
 import MainSidebar from "../SIdebar/MainSidebar";
-
 export default function Masterlayout({ logininData }) {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const closePopup = () => {

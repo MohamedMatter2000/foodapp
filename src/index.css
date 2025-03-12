@@ -54,10 +54,11 @@ td:last-child {
 .dropdown-menu {
   position: relative;
   background-color: #fff;
-  transform: translate(-230px, 25px) !important;
+  transform: translate(-80%, 20%) !important;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
   border: none !important;
   outline: none !important;
+  z-index: 6 !important;
 }
 .dropdown-menu.recipes {
   transform: translate(-70px, 50px) !important;
@@ -123,4 +124,25 @@ input {
   border-radius: 50%;
   top: 7px;
   right: 0px;
+}
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid red;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  margin: auto;
+  text-align: center;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

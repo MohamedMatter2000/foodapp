@@ -3,7 +3,9 @@
 import avatar from "../../assets/images/avatar.png";
 import { CiSearch } from "react-icons/ci";
 import { FaChevronDown, FaBell } from "react-icons/fa";
-export default function Navbar({ logininData }) {
+import { useFoodApp } from "../../context/AppFoodProvider";
+export default function Navbar() {
+  const { logininData } = useFoodApp();
   return (
     <div className="pt-1 pb-3">
       <nav className="navbar navbar-expand-lg bg-body-tertiary rounded-3">

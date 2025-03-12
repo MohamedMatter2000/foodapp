@@ -2,43 +2,32 @@
 import { RouterProvider } from "react-router";
 import { Bounce, ToastContainer } from "react-toastify";
 import { createBrowserRouter } from "react-router-dom";
-import Forgetpass from "./Authentication/forget-pass/Forgetpass";
-import Login from "./Authentication/Login/Login";
-import Register from "./Authentication/Register/Register";
-import Resetpass from "./Authentication/Reset-pass/Resetpass";
-import Vertify from "./Authentication/vertify-account/vertify";
-import Categoriesdata from "./Catagories/categoriesData/Categoriesdata";
-import Categorieslist from "./Catagories/categoriesList/Categorieslist";
-import Dashboard from "./Dashboard/Dashboard";
-import Recipedata from "./Recipes/RecipeDate/Recipedata";
-import Recipelist from "./Recipes/RecipeList/Recipelist";
+import Forgetpass from "./features/Authentication/forget-pass/Forgetpass";
+import Login from "./features/Authentication/Login/Login";
+import Register from "./features/Authentication/Register/Register";
+import Resetpass from "./features/Authentication/Reset-pass/Resetpass";
+import Vertify from "./features/Authentication/vertify-account/vertify";
+// import Categoriesdata from "";
+import Dashboard from "./features/Dashboard/Dashboard";
+import Recipedata from "./features/Recipes/RecipeDate/Recipedata";
+import Recipelist from "./features/Recipes/RecipeList/Recipelist";
 import Authlayout from "./shared/Authlayout/Authlayout";
 import Masterlayout from "./shared/MasterLayout/Masterlayout";
 import Notfound from "./shared/Notfound/Notfound";
-import UserList from "./user/UserList";
-import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
+import UserList from "./features/user/UserList";
 import ProtectRoute from "./shared/ProtectRoute/ProtectRoute";
+import { AppFoodProvider } from "./context/AppFoodProvider";
+import Categorieslist from "./features/Catagories/categoriesList/Categorieslist";
 
 function App() {
-  const [logininData, setlogininData] = useState(null);
-  function saveLoginData() {
-    const endecodeToken = localStorage.getItem("token");
-    const decodeToken = jwtDecode(endecodeToken);
-    console.log(decodeToken);
-    setlogininData(decodeToken);
-  }
-  useEffect(() => {
-    if (localStorage.getItem("token")) saveLoginData();
-  }, []);
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Authlayout />,
       errorElement: <Notfound />,
       children: [
-        { index: "*", element: <Login saveLoginData={saveLoginData} /> },
-        { path: "login", element: <Login saveLoginData={saveLoginData} /> },
+        { index: "*", element: <Login /> },
+        { path: "login", element: <Login /> },
         { path: "register", element: <Register /> },
         { path: "forget-pass", element: <Forgetpass /> },
         { path: "reset-pass", element: <Resetpass /> },
@@ -49,7 +38,7 @@ function App() {
       path: "/dashboard",
       element: (
         <ProtectRoute>
-          <Masterlayout logininData={logininData} />
+          <Masterlayout />
         </ProtectRoute>
       ),
       errorElement: <Notfound />,
@@ -58,27 +47,29 @@ function App() {
         { path: "recipes", element: <Recipelist /> },
         { path: "recipes-data", element: <Recipedata /> },
         { path: "categories", element: <Categorieslist /> },
-        { path: "categories-data", element: <Categoriesdata /> },
+        // { path: "categories-data", element: <Categoriesdata /> },
         { path: "user", element: <UserList /> },
       ],
     },
   ]);
   return (
     <>
-      <RouterProvider router={router} />
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick={false}
-        rtl
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        transition={Bounce}
-      />
+      <AppFoodProvider>
+        <RouterProvider router={router} />
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick={false}
+          rtl
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          transition={Bounce}
+        />
+      </AppFoodProvider>
     </>
   );
 }
