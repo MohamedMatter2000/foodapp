@@ -27,15 +27,15 @@ function Paginations({
           ) : null
         }
         previousClassName={
-          ShowPrevButton ? " px-3 py-1  bg-primary rounded-2 text-light" : ""
+          ShowPrevButton ? " px-3 py-1  bg-success rounded-2 text-light" : ""
         }
         nextClassName={
-          ShowNextButton ? "px-3 py-1 bg-primary rounded-2 text-light" : ""
+          ShowNextButton ? "px-3 py-1 bg-success rounded-2 text-light" : ""
         }
         previousLinkClassName={ShowPrevButton ? "text-light" : ""}
         nextLinkClassName={ShowNextButton ? "text-light" : ""}
         onPageChange={handlePagesChange}
-        activeClassName="bg-primary text-light"
+        activeClassName="bg-success text-light"
         renderOnZeroPageCount={null}
         containerClassName="d-flex align-items-center
         justify-content-end gap-3"

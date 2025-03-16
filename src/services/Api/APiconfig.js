@@ -8,8 +8,7 @@ export const USER_URLS = {
   VERIFY_ACCOUNT: `/Users/verify`,
   CHANGE_PASSWORD: `/Users/ChangePassword`,
   GET_CURRENT_USER: "Users/currentUser",
-  GET_ALL_USER: (pageSize, pageNumber) =>
-    `Users/?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+  GET_ALL_USER: `/Users`,
   GET_USER: (id) => `/Users/${id}`,
   GET_USER_BY_ID: (id) => `User/${id}`,
   DELETE_USER: (id) => `Users/${id}`,

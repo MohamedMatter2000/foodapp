@@ -10,6 +10,7 @@ import DeletConfirmation from "../../../shared/DeleteConfirmation/DeletConfirmat
 import { imageURL } from "../../../services/Api/APiconfig";
 import { useFoodApp } from "../../../context/AppFoodProvider";
 import Spinner from "../../../shared/NoDate/Spinner";
+import Noimg from "../../../assets/images/nodata.png";
 import Paginations from "../../../shared/pagination/Pagination";
 import { CiSearch } from "react-icons/ci";
 export default function Recipelist() {
@@ -127,19 +128,19 @@ export default function Recipelist() {
             <th scope="col" className="px-4 py-4 rounded-start-3 text-nowrap">
               Id
             </th>
-            <th scope="col" className="px-4 py-4 ">
+            <th scope="col" className="px-4 py-4">
               Item Name
             </th>
-            <th scope="col" className="px-4 py-4 ">
+            <th scope="col" className="px-4 py-4">
               Imges
             </th>
-            <th scope="col" className="px-4 py-4 ">
+            <th scope="col" className="px-4 py-4">
               price
             </th>
-            <th scope="col" className="px-4 py-4 ">
+            <th scope="col" className="px-4 py-4">
               Description
             </th>
-            <th scope="col" className="px-4 py-4 ">
+            <th scope="col" className="px-4 py-4">
               Tags
             </th>
             <th scope="col" className="px-4 py-4 ">
@@ -166,7 +167,9 @@ export default function Recipelist() {
                 <td data-label="name" className="px-4 py-4 ">
                   <img
                     className=""
-                    src={`${imageURL}/${recipe?.imagePath}`}
+                    src={` ${
+                      recipe?.imagePath ? imageURL + recipe?.imagePath : Noimg
+                    }`}
                     style={{ maxWidth: 80 }}
                   />
                 </td>

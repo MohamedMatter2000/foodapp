@@ -10,9 +10,9 @@ import logo from "../../../assets/images/recipe-img.png";
 import NotData from "../../../shared/NoDate/NotData";
 import Spinner from "../../../shared/NoDate/Spinner";
 import { useState } from "react";
-import AddandEdit from "../AddandEditCategory/AddandEdit";
 import Paginations from "../../../shared/pagination/Pagination";
 import { CiSearch } from "react-icons/ci";
+import Categoriesdata from "../categoriesData/Categoriesdata";
 export default function Categorieslist() {
   const [currentCategry, setcurrentCategry] = useState();
   const [show, setShow] = useState(false);
@@ -167,7 +167,7 @@ export default function Categorieslist() {
       ) : null}
       {isPopupVisible && <DeletConfirmation />}
       {show && (
-        <AddandEdit
+        <Categoriesdata
           closeAdd={CloseAndOpen}
           currentCategry={currentCategry}
           show={show}

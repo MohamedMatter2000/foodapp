@@ -24,16 +24,23 @@ function AppFoodProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [TotalofPages, setTotalOFPages] = useState(0);
   const [TotalofPagesRecipe, setTotalOFPagesRecipe] = useState(0);
+  const [TotalofPagesUser, setTotalOFPagesUser] = useState(0);
   const [SearchQueryCategory, setSearchQueryCategory] = useState("");
   const [CategorySelected, setCategorySelected] = useState("");
   const [SearchQueryRecipe, setSearchQueryRecipe] = useState("");
+  const [SearchQueryUser, setSearchQueryUser] = useState("");
+  const [SearchCountryUser, setSearchCountryUser] = useState("");
+  const [SearchEmailUser, setSearchEmailUser] = useState("");
   const [TagSelected, setTagSelected] = useState("");
   const [currentPage, setcurrentPage] = useState(0);
   const [currentPagerecipe, setcurrentPagerecipe] = useState(0);
+  const [currentPageuser, setcurrentPageuser] = useState(0);
   const ShowNextButton = currentPage !== TotalofPages - 1;
   const ShowPrevButton = currentPage !== 0;
   const ShowNextButtonrecipe = currentPagerecipe !== TotalofPagesRecipe - 1;
   const ShowPrevButtonrecipe = currentPagerecipe !== 0;
+  const ShowNextButtonuser = currentPageuser !== TotalofPagesUser - 1;
+  const ShowPrevButtonruser = currentPageuser !== 0;
   const closePopup = () => {
     setIsPopupVisible(!isPopupVisible);
   };
@@ -132,14 +139,21 @@ function AppFoodProvider({ children }) {
       console.log(error);
     }
   }
-  async function getUsers() {
+  async function getUsers(pageSize, pageNumber, userName, country, email) {
     setIsLoading(true);
     try {
-      const res = await PrivateaxiosInstances.get(
-        USER_URLS.GET_ALL_USER(10, 1)
-      );
+      const res = await PrivateaxiosInstances.get(USER_URLS.GET_ALL_USER, {
+        params: {
+          pageSize: pageSize,
+          pageNumber: pageNumber,
+          userName: userName,
+          country: country,
+          email: email,
+        },
+      });
       console.log(res?.data?.data);
       setUsers(res?.data?.data);
+      setTotalOFPagesUser(res?.data?.totalNumberOfPages);
     } catch (error) {
       setUsers([]);
       console.log(error || "Faild to get data");
@@ -187,7 +201,6 @@ function AppFoodProvider({ children }) {
       console.log(error);
     }
   }
-  console.log(Allcategoryslistname);
   useEffect(() => {
     Allcategorysselected();
   }, []);
@@ -195,8 +208,14 @@ function AppFoodProvider({ children }) {
     getAllTags();
   }, []);
   useEffect(() => {
-    getUsers();
-  }, []);
+    getUsers(
+      6,
+      currentPageuser + 1,
+      SearchCountryUser,
+      SearchCountryUser,
+      SearchEmailUser
+    );
+  }, [currentPageuser, SearchQueryUser, SearchCountryUser, SearchEmailUser]);
   useEffect(() => {
     getAllCategries(6, currentPage + 1, SearchQueryCategory);
   }, [currentPage, SearchQueryCategory]);
@@ -258,6 +277,15 @@ function AppFoodProvider({ children }) {
         getAllTags,
         Allcategorysselected,
         getAllRecipe,
+        setSearchQueryUser,
+        SearchQueryUser,
+        ShowPrevButtonruser,
+        ShowNextButtonuser,
+        setcurrentPageuser,
+        TotalofPagesUser,
+        setTotalOFPagesUser,
+        setSearchCountryUser,
+        setSearchEmailUser,
       }}
     >
       {children}

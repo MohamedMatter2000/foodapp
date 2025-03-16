@@ -269,4 +269,10 @@ export default function Recipedata() {
   );
 }
 
-
+// const handleImageChange = (e) => {
+//   const file = e.target.files[0];
+//   if (file) {
+//     setValue("recipeImage", file.name);
+//     setImagePreview(file);
+//   }
+// };

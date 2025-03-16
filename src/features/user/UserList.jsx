@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import Header from "../../shared/Header/Header";
 import logo from "../../assets/images/recipe-img.png";
 import { useFoodApp } from "../../context/AppFoodProvider";
@@ -6,8 +5,15 @@ import { BsThreeDots } from "react-icons/bs";
 import DeletConfirmation from "../../shared/DeleteConfirmation/DeletConfirmation";
 import NotData from "../../shared/NoDate/NotData";
 import Spinner from "../../shared/NoDate/Spinner";
-import { MdDelete, MdOutlineEditCalendar, MdViewList } from "react-icons/md";
-import { useState } from "react";
+import {
+  MdAlternateEmail,
+  MdDelete,
+  MdOutlineEditCalendar,
+  MdViewList,
+} from "react-icons/md";
+import { IoEarthSharp } from "react-icons/io5";
+import Paginations from "../../shared/pagination/Pagination";
+import { CiSearch } from "react-icons/ci";
 export default function UserList() {
   const {
     Users,
@@ -15,9 +21,26 @@ export default function UserList() {
     isPopupVisible,
     isLoading,
     setChooseDelete,
-    userId,
     setuserId,
+    setSearchQueryUser,
+    ShowPrevButtonruser,
+    ShowNextButtonuser,
+    setcurrentPageuser,
+    TotalofPagesUser,
+    setSearchCountryUser,
+    setSearchEmailUser,
   } = useFoodApp();
+  function handleNameSearchBar(e) {
+    setSearchQueryUser(e.target.value);
+  }
+  function handleEmailSearchBar(e) {
+    setSearchEmailUser(e.target.value);
+  }
+  function handleCountrySearchBar(e) {
+    setSearchCountryUser(e.target.value);
+    console.log(e.target.value);
+    console.log(typeof e.target.value);
+  }
   return (
     <>
       <Header
@@ -29,6 +52,59 @@ export default function UserList() {
         <div className="lh-1">
           <h5 className="h5 ">Users Table Details</h5>
           <p className="fs-6 ">You can check all details</p>
+        </div>
+      </div>
+      <div className="Total-search-tag-cate d-flex  gap-3 my-3">
+        <div
+          className="search mb-3  w-50 d-flex justify-content-between align-items-center"
+          style={{ marginLeft: "-20px" }}
+        >
+          <div
+            className=" position-relative fs-5 "
+            style={{ left: "40px", marginTop: "-4px" }}
+          >
+            <CiSearch />
+          </div>
+          <input
+            type="search"
+            placeholder="Search"
+            className="w-100  px-5 py-2 rounded-3  border-1 border"
+            onChange={handleNameSearchBar}
+          />
+        </div>
+        <div
+          className="search mb-3  w-25 d-flex justify-content-between align-items-center"
+          style={{ marginLeft: "-20px" }}
+        >
+          <div
+            className=" position-relative fs-5 "
+            style={{ left: "40px", marginTop: "-4px" }}
+          >
+            <IoEarthSharp />
+          </div>
+          <input
+            type="text"
+            placeholder="Enter Country"
+            className="w-100 px-5 py-2 rounded-3  border-1 border"
+            onChange={handleCountrySearchBar}
+          />
+        </div>
+        <div
+          className="search mb-3  w-50 d-flex justify-content-between align-items-center"
+          style={{ marginLeft: "-20px" }}
+        >
+          <div
+            className=" position-relative fs-5 "
+            style={{ left: "40px", marginTop: "-4px" }}
+          >
+            <MdAlternateEmail />
+          </div>
+          <input
+            type="text"
+            placeholder="Enter Email"
+            className="w-100  px-5 py-2 rounded-3  border-1 border"
+            onChange={handleEmailSearchBar}
+          />
         </div>
       </div>
       <table className="table table-striped  table-hover text-center align-middle">
@@ -114,6 +190,14 @@ export default function UserList() {
           )}
         </tbody>
       </table>
+      {Users.length > 0 ? (
+        <Paginations
+          TotalofPages={TotalofPagesUser}
+          setcurrentPage={setcurrentPageuser}
+          ShowNextButton={ShowNextButtonuser}
+          ShowPrevButton={ShowPrevButtonruser}
+        />
+      ) : null}
       {isPopupVisible && <DeletConfirmation />}
     </>
   );

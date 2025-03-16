@@ -25,11 +25,7 @@ export default function MainSidebar({ setIsPopupVisible }) {
   return (
     <div className="sidebar-container">
       <Sidebar collapsed={isCollapse}>
-        <Menu
-          menuItemStyles={{
-            background: "red",
-          }}
-        >
+        <Menu>
           <MenuItem
             onClick={toggleCollapse}
             className={`pt-4 mb-5 loge-li  ${isCollapse ? "ps-0" : "ps-3"}`}

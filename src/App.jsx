@@ -6,7 +6,7 @@ import Forgetpass from "./features/Authentication/forget-pass/Forgetpass";
 import Login from "./features/Authentication/Login/Login";
 import Register from "./features/Authentication/Register/Register";
 import Resetpass from "./features/Authentication/Reset-pass/Resetpass";
-import Vertify from "./features/Authentication/vertify-account/vertify";
+import Vertify from "./features/Authentication/vertify-account/Vertify";
 // import Categoriesdata from "";
 import Dashboard from "./features/Dashboard/Dashboard";
 import Recipedata from "./features/Recipes/RecipeDate/Recipedata";
