@@ -14,17 +14,16 @@ export const USER_URLS = {
   GET_USER_BY_ID: (id) => `User/${id}`,
   DELETE_USER: (id) => `Users/${id}`,
 };
-
 export const RECEIPE_URL = {
-  GET_RECIPE: "Recipe/?pageSize=10&pageNumber=1",
+  GET_RECIPE: "Recipe",
   GET_RECIPE_BY_ID: (id) => `Recipe/${id}`,
   DELETE_RECIPE: (id) => `Recipe/${id}`,
   UPDATE_RECIPE: (id) => `Recipe/${id}`,
-  ADD_RECIPE: "Recipe/",
+  ADD_RECIPE: "Recipe",
 };
 export const CATEGORY_URL = {
-  GET_CATOGERY: "Category/?pageSize=10&pageNumber=1",
-  ADD_CATOGERY: "Category/",
+  GET_CATOGERY: "Category",
+  ADD_CATOGERY: "Category",
   DELETE_CATOGERY: (id) => `Category/${id}`,
   EDIT_CATOGERY: (id) => `Category/${id}`,
   GET_CATEGORY_BY_ID: (id) => `Category/${id}`,
@@ -34,4 +33,7 @@ export const USER_RECEIPE_URL = {
   GET_USER_RECIPE: "userRecipe",
   DELETE_USER_RECIPE: (id) => `userRecipe/${id}`,
   ADD_USER_RECIPE: "userRecipe",
+};
+export const TAG_URL = {
+  GET_ALL_TAG: "tag/",
 };

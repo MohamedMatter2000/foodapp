@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { Link } from "react-router-dom";
 import { FaLongArrowAltRight } from "react-icons/fa";
 export default function Minheader({ title, discribtion, btnName, recipes }) {
   const highlighRecipes = (title) => {
@@ -20,14 +21,19 @@ export default function Minheader({ title, discribtion, btnName, recipes }) {
           <p className=" w-75 text-black">{discribtion}</p>
         </div>
         <div className="col-lg-5 d-grid align-content-center">
-          <button className="btn btn-success d-flex mx-auto gap-4 px-5">
-            {btnName}
-            {recipes && (
-              <span>
-                <FaLongArrowAltRight />
-              </span>
-            )}
-          </button>
+          <Link
+            to="/dashboard/recipes/new-recipe"
+            className="text-decoration-none text-black "
+          >
+            <button className="btn btn-success d-flex mx-auto gap-4 px-5">
+              {btnName}
+              {recipes && (
+                <span>
+                  <FaLongArrowAltRight />
+                </span>
+              )}
+            </button>
+          </Link>
         </div>
       </div>
     </div>

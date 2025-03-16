@@ -1,18 +1,17 @@
 /* eslint-disable no-unused-vars */
+import { Link } from "react-router-dom";
 import Header from "../../../shared/Header/Header";
 import Minheader from "../../../shared/Min-header/Minheader";
 import logo from "../../../assets/images/recipe-img.png";
-import { useState } from "react";
 import { MdDelete, MdOutlineEditCalendar, MdViewList } from "react-icons/md";
 import { BsThreeDots } from "react-icons/bs";
-import { useEffect } from "react";
 import NotData from "../../../shared/NoDate/NotData";
 import DeletConfirmation from "../../../shared/DeleteConfirmation/DeletConfirmation";
-import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
-import { imageURL, RECEIPE_URL } from "../../../services/Api/APiconfig";
+import { imageURL } from "../../../services/Api/APiconfig";
 import { useFoodApp } from "../../../context/AppFoodProvider";
 import Spinner from "../../../shared/NoDate/Spinner";
-import { toast } from "react-toastify";
+import Paginations from "../../../shared/pagination/Pagination";
+import { CiSearch } from "react-icons/ci";
 export default function Recipelist() {
   const {
     closePopup,
@@ -21,8 +20,42 @@ export default function Recipelist() {
     setChooseDelete,
     recipesylist,
     setrecipeId,
+    TotalofPagesRecipe,
+    ShowPrevButtonrecipe,
+    ShowNextButtonrecipe,
+    setcurrentPagerecipe,
+    tagslist,
+    Allcategoryslistname,
+    setTagSelected,
+    setSearchQueryRecipe,
+    setCategorySelected,
   } = useFoodApp();
-
+  function handleSearchBar(e) {
+    setSearchQueryRecipe(e.target.value);
+  }
+  function handleSelectedTag(e) {
+    setTagSelected(e.target.value);
+  }
+  function handleSelectCategory(e) {
+    setCategorySelected(e.target.value);
+  }
+  function removeDuplicates(array) {
+    const seen = new Set();
+    return array
+      .map((item) => ({
+        ...item,
+        name: item.name.replace(/\s+/g, ""),
+      }))
+      .filter((item) => {
+        if (seen.has(item.name)) {
+          return false;
+        }
+        seen.add(item.name);
+        return true;
+      });
+  }
+  let uniqueArray = removeDuplicates(Allcategoryslistname);
+  console.log(uniqueArray);
   return (
     <div>
       <Header
@@ -35,6 +68,59 @@ export default function Recipelist() {
         discribtion={"You can check all details"}
         btnName={"Add New Item"}
       />
+      <div className="Total-search-tag-cate d-flex  gap-3 my-3">
+        <div
+          className="search mb-3  w-50 d-flex justify-content-between align-items-center"
+          style={{ marginLeft: "-20px" }}
+        >
+          <div
+            className=" position-relative fs-5 "
+            style={{ left: "40px", marginTop: "-4px" }}
+          >
+            <CiSearch />
+          </div>
+          <input
+            type="search"
+            placeholder="Search"
+            className="w-100  px-5 py-2 rounded-3  border-1 border"
+            onChange={handleSearchBar}
+          />
+        </div>
+        <div className="selected-tags w-25">
+          <select
+            className="form-select"
+            aria-label="Default select example"
+            onChange={handleSelectedTag}
+          >
+            <option selected value=" ">
+              Tags
+            </option>
+            {tagslist &&
+              tagslist?.map((tag) => (
+                <option key={tag.id} value={tag.id}>
+                  {tag.name}
+                </option>
+              ))}
+          </select>
+        </div>
+        <div className="selectedcategary">
+          <select
+            className="form-select"
+            aria-label="Default select example"
+            onChange={handleSelectCategory}
+          >
+            <option selected value=" ">
+              Category
+            </option>
+            {uniqueArray &&
+              uniqueArray.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name.trim()}
+                </option>
+              ))}
+          </select>
+        </div>
+      </div>
       <table className="table  table-borderless">
         <thead className=" table-light">
           <tr>
@@ -52,6 +138,12 @@ export default function Recipelist() {
             </th>
             <th scope="col" className="px-4 py-4 ">
               Description
+            </th>
+            <th scope="col" className="px-4 py-4 ">
+              Tags
+            </th>
+            <th scope="col" className="px-4 py-4 ">
+              category
             </th>
             <th scope="col" className="px-4 py-4 ">
               Created At
@@ -84,12 +176,18 @@ export default function Recipelist() {
                 <td data-label="name" className="px-4 py-4 ">
                   {recipe?.description}
                 </td>
+                <td data-label="name" className="px-4 py-4 ">
+                  {recipe?.tag?.name}
+                </td>
+                <td data-label="name" className="px-4 py-4 ">
+                  {recipe?.category[0]?.name ?? "none"}
+                </td>
                 <td data-label="Description" className="px-4 py-4 text-wrap">
                   {new Date(recipe?.creationDate).toLocaleString()}
                 </td>
                 <td
                   data-label="Action"
-                  className="dropup-center dropup z-3 px-4 py-4"
+                  className="dropup-center dropup  px-4 py-4"
                 >
                   <BsThreeDots
                     className="fa fa-ellipsis  dropup-center dropup fs-5 "
@@ -104,12 +202,13 @@ export default function Recipelist() {
                         <MdViewList className="text-success fs-4" /> View
                       </a>
                     </li>
-                    <li>
-                      <a className="dropdown-item d-flex  align-items-center gap-2">
-                        <MdOutlineEditCalendar className="text-success fs-4" />
-                        Edit
-                      </a>
-                    </li>
+                    <Link
+                      to={`/dashboard/recipes/${recipe.id}`}
+                      className="dropdown-item d-flex  align-items-center gap-2"
+                    >
+                      <MdOutlineEditCalendar className="text-success fs-4" />
+                      Edit
+                    </Link>
                     <li
                       onClick={function () {
                         setrecipeId(recipe?.id);
@@ -132,13 +231,22 @@ export default function Recipelist() {
             ))
           ) : (
             <tr>
-              <td className="text-center" colSpan={7}>
+              <td className="text-center" colSpan={9}>
                 {isLoading ? <Spinner /> : <NotData />}
               </td>
             </tr>
           )}
         </tbody>
       </table>
+      {recipesylist.length > 0 ? (
+        <Paginations
+          TotalofPages={TotalofPagesRecipe}
+          setcurrentPage={setcurrentPagerecipe}
+          ShowNextButton={ShowNextButtonrecipe}
+          ShowPrevButton={ShowPrevButtonrecipe}
+        />
+      ) : null}
+
       {isPopupVisible && <DeletConfirmation />}
     </div>
   );

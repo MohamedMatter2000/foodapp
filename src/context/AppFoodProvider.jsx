@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { toast } from "react-toastify";
-import { jwtDecode } from "jwt-decode";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   CATEGORY_URL,
   RECEIPE_URL,
+  TAG_URL,
   USER_URLS,
 } from "../services/Api/APiconfig";
 import { PrivateaxiosInstances } from "../services/Api/ApInstance";
@@ -14,26 +14,44 @@ function AppFoodProvider({ children }) {
   const [recipeId, setrecipeId] = useState(0);
   const [recipesylist, setrecipeslist] = useState([]);
   const [categorylist, setcategorylist] = useState([]);
+  const [tagslist, settagslist] = useState([]);
+  const [Allcategoryslistname, settAllcategoryslistname] = useState([]);
   const [Users, setUsers] = useState([]);
   const [userId, setuserId] = useState(0);
   const [chooseDelete, setChooseDelete] = useState("categery");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [categeryId, setcategeryId] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [logininData, setlogininData] = useState(() => {
-    let Token = localStorage.getItem("token");
-    return Token ? jwtDecode(Token) : null;
-  });
+  const [TotalofPages, setTotalOFPages] = useState(0);
+  const [TotalofPagesRecipe, setTotalOFPagesRecipe] = useState(0);
+  const [SearchQueryCategory, setSearchQueryCategory] = useState("");
+  const [CategorySelected, setCategorySelected] = useState("");
+  const [SearchQueryRecipe, setSearchQueryRecipe] = useState("");
+  const [TagSelected, setTagSelected] = useState("");
+  const [currentPage, setcurrentPage] = useState(0);
+  const [currentPagerecipe, setcurrentPagerecipe] = useState(0);
+  const ShowNextButton = currentPage !== TotalofPages - 1;
+  const ShowPrevButton = currentPage !== 0;
+  const ShowNextButtonrecipe = currentPagerecipe !== TotalofPagesRecipe - 1;
+  const ShowPrevButtonrecipe = currentPagerecipe !== 0;
   const closePopup = () => {
     setIsPopupVisible(!isPopupVisible);
   };
-  async function getAllCategries() {
+  async function getAllCategries(pageSize, pageNumber, name) {
     setIsLoading(true);
     try {
       const response = await PrivateaxiosInstances.get(
-        CATEGORY_URL.GET_CATOGERY
+        CATEGORY_URL.GET_CATOGERY,
+        {
+          params: {
+            pageSize: pageSize,
+            pageNumber: pageNumber,
+            name: name,
+          },
+        }
       );
       setcategorylist(response.data.data);
+      setTotalOFPages(response?.data?.totalNumberOfPages);
     } catch (error) {
       console.log(error);
     } finally {
@@ -79,18 +97,28 @@ function AppFoodProvider({ children }) {
       console.log(error);
     }
   }
-
-  async function getAllRecipe() {
+  async function getAllRecipe(pageSize, pageNumber, name, tagId, categoryId) {
     setIsLoading(true);
     try {
-      const response = await PrivateaxiosInstances.get(RECEIPE_URL.GET_RECIPE);
+      const response = await PrivateaxiosInstances.get(RECEIPE_URL.GET_RECIPE, {
+        params: {
+          pageSize: pageSize,
+          pageNumber: pageNumber,
+          name: name,
+          tagId: tagId,
+          categoryId: categoryId,
+        },
+      });
       setrecipeslist(response?.data?.data);
+      setTotalOFPagesRecipe(response?.data?.totalNumberOfPages);
+      console.log(TotalofPagesRecipe);
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
     }
   }
+
   async function deletrecipes(id) {
     console.log(id);
     try {
@@ -133,16 +161,57 @@ function AppFoodProvider({ children }) {
       setIsLoading(false);
     }
   };
-
+  async function getAllTags() {
+    try {
+      const res = await PrivateaxiosInstances.get(TAG_URL.GET_ALL_TAG);
+      console.log(res?.data);
+      settagslist(res?.data);
+    } catch (error) {
+      console.log(error || "Faild to get data");
+    }
+  }
+  async function Allcategorysselected() {
+    try {
+      const response = await PrivateaxiosInstances.get(
+        CATEGORY_URL.GET_CATOGERY,
+        {
+          params: {
+            pageSize: 50,
+            pageNumber: 1,
+          },
+        }
+      );
+      settAllcategoryslistname(response.data.data);
+      setTotalOFPages(response?.data?.totalNumberOfPages);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  console.log(Allcategoryslistname);
+  useEffect(() => {
+    Allcategorysselected();
+  }, []);
+  useEffect(() => {
+    getAllTags();
+  }, []);
   useEffect(() => {
     getUsers();
   }, []);
   useEffect(() => {
-    getAllCategries();
-  }, []);
+    getAllCategries(6, currentPage + 1, SearchQueryCategory);
+  }, [currentPage, SearchQueryCategory]);
   useEffect(() => {
-    getAllRecipe();
-  }, []);
+    getAllRecipe(
+      10,
+      currentPagerecipe + 1,
+      SearchQueryRecipe,
+      TagSelected,
+      CategorySelected
+    );
+  }, [currentPagerecipe, SearchQueryRecipe, TagSelected, CategorySelected]);
+  console.log(SearchQueryRecipe);
+  console.log(CategorySelected);
+  console.log(TagSelected);
   return (
     <AppContext.Provider
       value={{
@@ -154,7 +223,6 @@ function AppFoodProvider({ children }) {
         deletcategry,
         isPopupVisible,
         setIsPopupVisible,
-        logininData,
         AddandEditcategry,
         getUsers,
         Users,
@@ -168,6 +236,28 @@ function AppFoodProvider({ children }) {
         deletrecipes,
         recipeId,
         setrecipeId,
+        TotalofPages,
+        setTotalOFPages,
+        setcurrentPage,
+        ShowNextButton,
+        ShowPrevButton,
+        SearchQueryCategory,
+        setSearchQueryCategory,
+        TotalofPagesRecipe,
+        setTotalOFPagesRecipe,
+        currentPagerecipe,
+        setcurrentPagerecipe,
+        ShowPrevButtonrecipe,
+        ShowNextButtonrecipe,
+        tagslist,
+        Allcategoryslistname,
+        settAllcategoryslistname,
+        setTagSelected,
+        setSearchQueryRecipe,
+        setCategorySelected,
+        getAllTags,
+        Allcategorysselected,
+        getAllRecipe,
       }}
     >
       {children}

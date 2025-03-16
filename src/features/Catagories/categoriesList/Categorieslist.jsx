@@ -11,6 +11,8 @@ import NotData from "../../../shared/NoDate/NotData";
 import Spinner from "../../../shared/NoDate/Spinner";
 import { useState } from "react";
 import AddandEdit from "../AddandEditCategory/AddandEdit";
+import Paginations from "../../../shared/pagination/Pagination";
+import { CiSearch } from "react-icons/ci";
 export default function Categorieslist() {
   const [currentCategry, setcurrentCategry] = useState();
   const [show, setShow] = useState(false);
@@ -24,9 +26,16 @@ export default function Categorieslist() {
     isPopupVisible,
     setcategeryId,
     isLoading,
-    chooseDelete,
-    setChooseDelete,
+    setSearchQueryCategory,
+    TotalofPages,
+    setcurrentPage,
+    ShowNextButton,
+    ShowPrevButton,
   } = useFoodApp();
+  function handleSearchBar(e) {
+    setSearchQueryCategory(e.target.value);
+  }
+
   return (
     <>
       <Header
@@ -34,7 +43,7 @@ export default function Categorieslist() {
         discribtion="You can now add your items that any user can order it from the Application and you can edit"
         logo={logo}
       />
-      <div class="d-block d-md-flex justify-content-between align-content-center mt-2 py-1 ">
+      <div class="d-block d-md-flex justify-content-between  mt-2 py-1 ">
         <div class="lh-1">
           <h5 class="h5 ">Categories Table Details</h5>
           <p class="fs-6 ">You can check all details</p>
@@ -50,6 +59,23 @@ export default function Categorieslist() {
             Add New Item
           </button>
         </div>
+      </div>
+      <div
+        className="search mb-3  w-100 d-flex justify-content-between align-items-center"
+        style={{ marginLeft: "-20px" }}
+      >
+        <div
+          className=" position-relative fs-5 "
+          style={{ left: "40px", marginTop: "-4px" }}
+        >
+          <CiSearch />
+        </div>
+        <input
+          type="search"
+          placeholder="Search"
+          className="w-100  px-5 py-2 rounded-3  border-1 border"
+          onChange={handleSearchBar}
+        />
       </div>
       <table className="table table-striped  table-hover text-center align-middle">
         <thead className="table-secondary overflow-visible">
@@ -79,13 +105,13 @@ export default function Categorieslist() {
                 </td>
                 <td
                   data-label="Action"
-                  className="dropup-center dropup z-3 px-4 py-4 position-relative"
+                  className="dropup-center dropup  px-4 py-4 "
                 >
                   <BsThreeDots
                     className="fa fa-ellipsis  dropup-center dropup fs-5 "
                     data-bs-toggle="dropdown"
                   />
-                  <ul className="dropdown-menu  border-none w-100  z-6 position-absolute mt-2 rounded-2">
+                  <ul className="dropdown-menu  border-none w-100  z-3 position-absolute mt-2 rounded-2">
                     <li>
                       <a className="dropdown-item d-flex  align-items-center gap-2">
                         <MdViewList className="text-success fs-4" /> View
@@ -131,6 +157,14 @@ export default function Categorieslist() {
           )}
         </tbody>
       </table>
+      {categorylist?.length > 0 ? (
+        <Paginations
+          TotalofPages={TotalofPages}
+          setcurrentPage={setcurrentPage}
+          ShowNextButton={ShowNextButton}
+          ShowPrevButton={ShowPrevButton}
+        />
+      ) : null}
       {isPopupVisible && <DeletConfirmation />}
       {show && (
         <AddandEdit
