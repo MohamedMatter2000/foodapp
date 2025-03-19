@@ -143,7 +143,7 @@ export default function UserList() {
                 </td>
                 <td
                   data-label="Action"
-                  className="dropup-center dropup z-3 px-4 py-4 position-relative"
+                  className="dropup-center dropup  px-4 py-4 position-relative"
                 >
                   <BsThreeDots
                     className="fa fa-ellipsis  dropup-center dropup fs-5 "

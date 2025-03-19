@@ -31,6 +31,11 @@ td:last-child {
   background-color: #00924d1a !important;
   border-left: 3px solid #009247;
 }
+
+.sidebar-container li.ps-active {
+  background-color: #00924d1a !important;
+  border-left: 3px solid #009247;
+}
 .sidebar-container .loge-li a:hover {
   background-color: transparent !important;
   border-left: none !important;
@@ -128,7 +133,7 @@ input {
 .spinner {
   width: 48px;
   height: 48px;
-  border: 5px solid red;
+  border: 5px solid #198754;
   border-bottom-color: transparent;
   border-radius: 50%;
   margin: auto;

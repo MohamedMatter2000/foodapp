@@ -10,7 +10,6 @@ import {
   FaPhoneVolume,
 } from "react-icons/fa";
 import { useState } from "react";
-
 import { useEffect } from "react";
 import { axiosInstances } from "../../../services/Api/ApInstance";
 import { USER_URLS } from "../../../services/Api/APiconfig";
@@ -24,6 +23,7 @@ export default function Resetpass() {
   const [showpassword, setshowpassword] = useState(true);
   const navigate = useNavigate();
   const { state } = useLocation();
+  console.log(state);
   function handleshowpass() {
     setshowpassword((prev) => !prev);
   }

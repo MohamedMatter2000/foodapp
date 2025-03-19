@@ -1,20 +1,23 @@
-/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 import { useForm } from "react-hook-form";
+import { FaEnvelope, FaPhoneVolume } from "react-icons/fa";
 import { FaSpinner } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { USER_URLS } from "../../../services/Api/APiconfig";
 import { axiosInstances } from "../../../services/Api/ApInstance";
 import { EMAIL_VAILDTION, OTP_VAILDTION } from "../../../services/validation";
 
 export default function Vertify() {
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  console.log(state);
   const {
     register,
     formState: { errors, isSubmitting },
     handleSubmit,
-  } = useForm();
-  const navigate = useNavigate();
+  } = useForm({ defaultValues: { email: state?.email } }, { mode: "onChange" });
   async function onsubmit(data) {
     console.log(data);
     try {
@@ -26,7 +29,6 @@ export default function Vertify() {
       toast.error(errors.response.data.message);
     }
   }
-
   return (
     <>
       <div className="title my-3">
@@ -36,7 +38,7 @@ export default function Vertify() {
       <form onSubmit={handleSubmit(onsubmit)}>
         <div className="input-group mb-3">
           <span className="input-group-text" id="basic-addon1">
-            <i className="fa fa-envelope" aria-hidden="true"></i>
+            <FaEnvelope />
           </span>
           <input
             type="Email"
@@ -53,8 +55,8 @@ export default function Vertify() {
           </span>
         )}
         <div className="input-group mb-3">
-          <span className="input-group-text" id="basic-addon1">
-            <i className="fa fa-envelope" aria-hidden="true"></i>
+          <span className="input-group-text " id="basic-addon1">
+            <FaPhoneVolume />
           </span>
           <input
             type="text"

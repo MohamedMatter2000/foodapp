@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { RouterProvider } from "react-router";
 import { Bounce, ToastContainer } from "react-toastify";
 import { createBrowserRouter } from "react-router-dom";
@@ -7,7 +6,6 @@ import Login from "./features/Authentication/Login/Login";
 import Register from "./features/Authentication/Register/Register";
 import Resetpass from "./features/Authentication/Reset-pass/Resetpass";
 import Vertify from "./features/Authentication/vertify-account/Vertify";
-// import Categoriesdata from "";
 import Dashboard from "./features/Dashboard/Dashboard";
 import Recipedata from "./features/Recipes/RecipeDate/Recipedata";
 import Recipelist from "./features/Recipes/RecipeList/Recipelist";
@@ -20,6 +18,7 @@ import { AppFoodProvider } from "./context/AppFoodProvider";
 import Categorieslist from "./features/Catagories/categoriesList/Categorieslist";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+
 function App() {
   const [loginData, setLoginData] = useState(() => {
     let Token = localStorage.getItem("token");

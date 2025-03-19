@@ -4,13 +4,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useFoodApp } from "../../../context/AppFoodProvider";
 import { FaArrowUpFromBracket } from "react-icons/fa6";
-import { RECEIPE_URL } from "../../../services/Api/APiconfig";
+import { imageURL, RECEIPE_URL } from "../../../services/Api/APiconfig";
 import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 export default function Recipedata() {
-  const [imagePreview, setImagePreview] = useState("");
+  const [imagePreview, setImagePreview] = useState(null);
   const params = useParams();
   const recipeId = params.recipeId;
   const navigate = useNavigate();
@@ -49,6 +49,21 @@ export default function Recipedata() {
       });
   }
   let uniqueArray = removeDuplicates(Allcategoryslistname);
+  const pathToFileObject = async (imagePath) => {
+    try {
+      const fullImageUrl = `${imageURL}${imagePath}`;
+      setImagePreview(fullImageUrl);
+      const response = await fetch(fullImageUrl);
+      if (!response.ok) throw new Error("Failed to fetch image");
+      const blob = await response.blob();
+      const fileName = imagePath.split("/").pop();
+      const file = new File([blob], fileName, { type: blob.type });
+      return file;
+    } catch (error) {
+      console.error("Error converting path to File object:", error);
+      return null;
+    }
+  };
   async function onsubmit(data) {
     const formData = new FormData();
     for (let key in data) {
@@ -87,7 +102,8 @@ export default function Recipedata() {
       CategorySelected
     );
   }
-
+  console.log(imagePreview);
+  console.log(imageURL);
   useEffect(() => {
     (async () => {
       await getAllTags();
@@ -104,7 +120,13 @@ export default function Recipedata() {
           setValue("tagId", recipe?.tag?.id);
           setValue("categoriesIds", recipe?.category[0]?.id);
           setValue("price", recipe?.price);
-          setImagePreview(recipe.imagePath);
+          // setImagePreview(recipe.imagePath);
+          if (recipe?.imagePath) {
+            const file = await pathToFileObject(recipe?.imagePath);
+            if (file) {
+              setValue("recipeImage", [file]);
+            }
+          }
         };
         if (recipeId) {
           getRecipe();
@@ -226,7 +248,7 @@ export default function Recipedata() {
         {/*description*/}
         <label
           htmlFor="recipeImage"
-          className="form-label file-image-input recipeImage py-3 bg-success w-100 bg-opacity-10 fw-semibold"
+          className="form-label file-image-input recipeImage dott py-3 bg-success w-100 bg-opacity-10 fw-semibold"
         >
           <div className="d-flex align-items-center justify-content-center flex-column w-100">
             <FaArrowUpFromBracket />
@@ -238,7 +260,7 @@ export default function Recipedata() {
             />
             <p>
               <>
-                Drag & Drop or{" "}
+                Drag & Drop or
                 <span className="text-success">Choose an Image</span> to Upload
               </>
             </p>

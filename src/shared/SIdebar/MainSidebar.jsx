@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import icon from "../../assets/images/siderbaricon.png";
 import Home from "../../assets/images/Home.png";
 import recipe from "../../assets/images/recipe.png";
@@ -13,6 +13,7 @@ import logeouticon from "../../assets/images/logo-out.png";
 import { toast } from "react-toastify";
 export default function MainSidebar({ setIsPopupVisible }) {
   const [isCollapse, setCollapse] = useState(false);
+  const location = useLocation();
   const navgate = useNavigate();
   function toggleCollapse() {
     setCollapse(!isCollapse);
@@ -32,24 +33,28 @@ export default function MainSidebar({ setIsPopupVisible }) {
             icon={<img className="sidebar-loge" src={icon} />}
           ></MenuItem>
           <MenuItem
+            active={location.pathname === "/dashboard"}
             icon={<img className="sidebar-loge" src={Home} />}
             component={<Link to="/dashboard" />}
           >
             Home
           </MenuItem>
           <MenuItem
+            active={location.pathname === "/dashboard/user"}
             icon={<img className="sidebar-loge" src={User} />}
             component={<Link to="/dashboard/user" />}
           >
             User
           </MenuItem>
           <MenuItem
+            active={location.pathname === "/dashboard/recipes"}
             icon={<img className="sidebar-loge" src={recipe} />}
             component={<Link to="/dashboard/recipes" />}
           >
             Recipes
           </MenuItem>
           <MenuItem
+            active={location.pathname === "/dashboard/categories"}
             icon={<img className="sidebar-loge" src={Categories} />}
             component={<Link to="/dashboard/categories" />}
           >

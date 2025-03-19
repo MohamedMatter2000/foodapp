@@ -14,7 +14,7 @@ import Paginations from "../../../shared/pagination/Pagination";
 import { CiSearch } from "react-icons/ci";
 import Categoriesdata from "../categoriesData/Categoriesdata";
 export default function Categorieslist() {
-  const [currentCategry, setcurrentCategry] = useState();
+  const [currentCategry, setcurrentCategry] = useState("");
   const [show, setShow] = useState(false);
   const [Mode, setMode] = useState("");
   const CloseAndOpen = () => {
@@ -35,6 +35,11 @@ export default function Categorieslist() {
   function handleSearchBar(e) {
     setSearchQueryCategory(e.target.value);
   }
+  function handleAddCategory() {
+    setMode("Add");
+    CloseAndOpen();
+  }
+  console.log(currentCategry);
 
   return (
     <>
@@ -50,10 +55,7 @@ export default function Categorieslist() {
         </div>
         <div class=" mt-3 ">
           <button
-            onClick={function () {
-              setMode("Add");
-              CloseAndOpen();
-            }}
+            onClick={handleAddCategory}
             class="btn btn-success d-block mx-auto flex gap-4 align-content-center px-5"
           >
             Add New Item
@@ -77,7 +79,7 @@ export default function Categorieslist() {
           onChange={handleSearchBar}
         />
       </div>
-      <table className="table table-striped  table-hover text-center align-middle">
+      <table className="table table-striped table-borderless  table-hover text-center align-middle">
         <thead className="table-secondary overflow-visible">
           <tr>
             <th scope="col" className="px-1 py-4 rounded-start-3 text-nowrap">
@@ -118,9 +120,9 @@ export default function Categorieslist() {
                       </a>
                     </li>
                     <li
-                      onClick={function () {
-                        CloseAndOpen();
+                      onClick={() => {
                         setcurrentCategry(category);
+                        CloseAndOpen();
                         setMode("Update");
                       }}
                     >
@@ -130,7 +132,7 @@ export default function Categorieslist() {
                       </a>
                     </li>
                     <li
-                      onClick={function () {
+                      onClick={() => {
                         setcategeryId(category?.id);
                         closePopup();
                       }}

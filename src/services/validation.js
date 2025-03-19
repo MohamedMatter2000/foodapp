@@ -8,11 +8,14 @@ export const EMAIL_VAILDTION = {
 export const PASSWORD_VAILDTION = {
   required: "Password is required",
   pattern: {
-    value: /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
+    value:
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/,
     message:
       "Password must contain one digit from 1 to 9, one lowercase letter, one uppercase letter, one special character, no space, and it must be 8-16 characters long.",
   },
 };
+// value: /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
+// ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$
 export const OTP_VAILDTION = {
   required: "OTP is required",
   maxLength: {
@@ -32,5 +35,17 @@ export const COUNTRY_VAILDTION = {
   minLength: {
     value: 5,
     message: "enter chars more than 5 ",
+  },
+};
+export const USER_NAME = {
+  required: "userName is required",
+  pattern: {
+    value: /^[a-zA-Z]+[0-9]+$/,
+    message:
+      "The userName must contain characters and end with numbers without spaces",
+  },
+  maxLength: {
+    value: 8,
+    message: "The userName may not be greater than 8 characters",
   },
 };
