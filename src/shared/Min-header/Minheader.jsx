@@ -1,7 +1,12 @@
 /* eslint-disable react/prop-types */
-import { Link } from "react-router-dom";
 import { FaLongArrowAltRight } from "react-icons/fa";
-export default function Minheader({ title, discribtion, btnName, recipes }) {
+export default function Minheader({
+  title,
+  discribtion,
+  btnName,
+  recipes,
+  handleBtnAction,
+}) {
   const highlighRecipes = (title) => {
     return title.split(/(Recipes)/g).map((word, index) =>
       word === "Recipes" ? (
@@ -15,17 +20,20 @@ export default function Minheader({ title, discribtion, btnName, recipes }) {
   };
   return (
     <div className="sub-header container-fluid">
-      <div className=" row mt-4 py-4 sub-header-bg rounded-4 ">
-        <div className="col-lg-7">
-          <h5 className="h5 ">{recipes ? highlighRecipes(title) : title}</h5>
-          <p className=" w-75 text-black">{discribtion}</p>
-        </div>
-        <div className="col-lg-5 d-grid align-content-center">
-          <Link
-            to="/dashboard/recipes/new-recipe"
-            className="text-decoration-none text-black "
+      {recipes ? (
+        <div className=" row mt-4 py-4 sub-header-bg rounded-4 ">
+          <div className="col-lg-7">
+            <h5 className="h5 ">{recipes ? highlighRecipes(title) : title}</h5>
+            <p className=" w-75 text-black">{discribtion}</p>
+          </div>
+          <div
+            className="col-lg-5
+           d-grid align-content-center"
           >
-            <button className="btn btn-success d-flex mx-auto gap-4 px-5">
+            <button
+              onClick={handleBtnAction}
+              className="btn btn-success d-flex mx-auto gap-4 px-5 text-decoration-none text-light "
+            >
               {btnName}
               {recipes && (
                 <span>
@@ -33,9 +41,26 @@ export default function Minheader({ title, discribtion, btnName, recipes }) {
                 </span>
               )}
             </button>
-          </Link>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className=" d-flex justify-content-between align-content-center flex-wrap my-2 py-1 ">
+          <div className="lh-1">
+            <h5 className="h5 ">{title}</h5>
+            <p className="fs-6 ">{discribtion}</p>
+          </div>
+          <div className=" mt-3 ">
+            {btnName && (
+              <button
+                onClick={handleBtnAction}
+                className="btn btn-success d-block mx-auto flex gap-4 align-content-center px-5"
+              >
+                {btnName}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

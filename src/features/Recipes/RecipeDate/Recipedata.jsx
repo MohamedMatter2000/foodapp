@@ -14,6 +14,10 @@ export default function Recipedata() {
   const params = useParams();
   const recipeId = params.recipeId;
   const navigate = useNavigate();
+  console.log(imagePreview);
+  const handleToRecipe = () => {
+    navigate("/dashboard/recipes");
+  };
   const {
     register,
     formState: { errors, isSubmitting },
@@ -102,8 +106,6 @@ export default function Recipedata() {
       CategorySelected
     );
   }
-  console.log(imagePreview);
-  console.log(imageURL);
   useEffect(() => {
     (async () => {
       await getAllTags();
@@ -120,7 +122,6 @@ export default function Recipedata() {
           setValue("tagId", recipe?.tag?.id);
           setValue("categoriesIds", recipe?.category[0]?.id);
           setValue("price", recipe?.price);
-          // setImagePreview(recipe.imagePath);
           if (recipe?.imagePath) {
             const file = await pathToFileObject(recipe?.imagePath);
             if (file) {
@@ -134,13 +135,15 @@ export default function Recipedata() {
       }
     })();
   }, [recipeId, setValue]);
+
   return (
     <div>
       <Minheader
-        title="Fill the Recipes !"
+        title=" the Recipes !"
         discribtion="you can now fill the meals easily using the table and form , click here and sill it with the table !"
-        btnName="Fill Recipes"
+        btnName="back to  Recipes"
         recipes="true"
+        handleBtnAction={handleToRecipe}
       />
       <form onSubmit={handleSubmit(onsubmit)} className="mt-5">
         <div className="input-group mb-3">
@@ -197,7 +200,7 @@ export default function Recipedata() {
               // }}
             />
             <div className="input-group-append">
-              <span className="input-group-text border  border-start-0 rounded-end">
+              <span className="input-group-text border  rounded-start-0 rounded-end">
                 EGP
               </span>
             </div>
@@ -270,7 +273,7 @@ export default function Recipedata() {
           <div className="text-danger">{errors.recipeImage.message}</div>
         )}
         {/*description*/}
-        <div className="mt-5 d-flex justify-content-end gap-3">
+        <div className="mt-5 d-flex justify-content-end gap-3 flex-sm-column flex-md-row">
           <button
             type="button"
             onClick={() => navigate("/dashboard/recipes")}

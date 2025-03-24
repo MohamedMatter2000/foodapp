@@ -22,6 +22,7 @@ import {
   PHONE_VAILDTION,
   USER_NAME,
 } from "../../../services/validation";
+import TitleAuth from "../../../shared/TitleAuth/TitleAuth";
 export default function Register() {
   const [showconfirmpassword, setshowconfirmpassword] = useState(true);
   const [showpassword, setshowpassword] = useState(true);
@@ -64,12 +65,12 @@ export default function Register() {
   }
   return (
     <>
-      <div className="title my-3">
-        <h3 className="h5">Register</h3>
-        <p>Welcom Back! Please enter Your details</p>
-      </div>
+      <TitleAuth
+        heading="Register"
+        paragraph="Welcom Back! Please enter Your details"
+      />
       <form onSubmit={handleSubmit(onsubmit)}>
-        <div className="container-form d-flex gap-4">
+        <div className="container-form d-md-flex gap-md-4 flex-sm-column flex-md-row gap-sm-0">
           <div className="w-100">
             <div className="input-group mb-3">
               <span className="input-group-text" id="basic-addon1">

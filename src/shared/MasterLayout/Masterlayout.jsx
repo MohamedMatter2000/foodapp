@@ -1,10 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Changepass from "../../features/Authentication/change-pass/Changepass";
 import Navbar from "../Navbar/Navbar";
 import MainSidebar from "../SIdebar/MainSidebar";
-export default function Masterlayout({ logininData }) {
+export default function Masterlayout() {
+  const location = useLocation();
+  console.log(location.pathname);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const closePopup = () => {
     setIsPopupVisible(!isPopupVisible);
@@ -28,7 +30,7 @@ export default function Masterlayout({ logininData }) {
             overflow: "scroll",
           }}
         >
-          <Navbar logininData={logininData} />
+          <Navbar />
           <Outlet />
           {isPopupVisible && <Changepass closePopup={closePopup} />}
         </div>

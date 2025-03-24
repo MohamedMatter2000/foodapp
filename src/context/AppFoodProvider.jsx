@@ -6,17 +6,26 @@ import {
   CATEGORY_URL,
   RECEIPE_URL,
   TAG_URL,
+  USER_RECEIPE_URL,
   USER_URLS,
 } from "../services/Api/APiconfig";
 import { PrivateaxiosInstances } from "../services/Api/ApInstance";
+import { jwtDecode } from "jwt-decode";
 const AppContext = createContext();
 function AppFoodProvider({ children }) {
+  const [loginData, setLoginData] = useState(() => {
+    let Token = localStorage.getItem("token");
+    return Token ? jwtDecode(Token) : null;
+  });
+  const usergroup = loginData?.userGroup;
   const [recipeId, setrecipeId] = useState(0);
+  const [imageuser, setImageuser] = useState(null);
   const [recipesylist, setrecipeslist] = useState([]);
   const [categorylist, setcategorylist] = useState([]);
   const [tagslist, settagslist] = useState([]);
   const [Allcategoryslistname, settAllcategoryslistname] = useState([]);
   const [Users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const [userId, setuserId] = useState(0);
   const [chooseDelete, setChooseDelete] = useState("categery");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -29,7 +38,7 @@ function AppFoodProvider({ children }) {
   const [CategorySelected, setCategorySelected] = useState("");
   const [SearchQueryRecipe, setSearchQueryRecipe] = useState("");
   const [SearchQueryUser, setSearchQueryUser] = useState("");
-  const [SearchCountryUser, setSearchCountryUser] = useState("");
+  const [groups, setgroups] = useState();
   const [SearchEmailUser, setSearchEmailUser] = useState("");
   const [TagSelected, setTagSelected] = useState("");
   const [currentPage, setcurrentPage] = useState(0);
@@ -41,6 +50,17 @@ function AppFoodProvider({ children }) {
   const ShowPrevButtonrecipe = currentPagerecipe !== 0;
   const ShowNextButtonuser = currentPageuser !== TotalofPagesUser - 1;
   const ShowPrevButtonruser = currentPageuser !== 0;
+  const SaveLoginData = () => {
+    const data = localStorage.getItem("token");
+    const loginDataDecode = jwtDecode(data);
+    console.log(loginDataDecode);
+    setLoginData(loginDataDecode);
+  };
+  useEffect(() => {
+    if (localStorage.getItem("token") != null) {
+      SaveLoginData();
+    }
+  }, []);
   const closePopup = () => {
     setIsPopupVisible(!isPopupVisible);
   };
@@ -125,7 +145,6 @@ function AppFoodProvider({ children }) {
       setIsLoading(false);
     }
   }
-
   async function deletrecipes(id) {
     console.log(id);
     try {
@@ -139,7 +158,7 @@ function AppFoodProvider({ children }) {
       console.log(error);
     }
   }
-  async function getUsers(pageSize, pageNumber, userName, country, email) {
+  async function getUsers(pageSize, pageNumber, userName, email, groups) {
     setIsLoading(true);
     try {
       const res = await PrivateaxiosInstances.get(USER_URLS.GET_ALL_USER, {
@@ -147,8 +166,8 @@ function AppFoodProvider({ children }) {
           pageSize: pageSize,
           pageNumber: pageNumber,
           userName: userName,
-          country: country,
           email: email,
+          groups: groups,
         },
       });
       console.log(res?.data?.data);
@@ -201,6 +220,19 @@ function AppFoodProvider({ children }) {
       console.log(error);
     }
   }
+  const getCurrentUser = async () => {
+    try {
+      const response = await PrivateaxiosInstances.get(
+        USER_URLS.GET_CURRENT_USER
+      );
+      setCurrentUser(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
   useEffect(() => {
     Allcategorysselected();
   }, []);
@@ -211,11 +243,11 @@ function AppFoodProvider({ children }) {
     getUsers(
       6,
       currentPageuser + 1,
-      SearchCountryUser,
-      SearchCountryUser,
-      SearchEmailUser
+      SearchQueryUser,
+      SearchEmailUser,
+      groups === "both" ? null : groups
     );
-  }, [currentPageuser, SearchQueryUser, SearchCountryUser, SearchEmailUser]);
+  }, [currentPageuser, SearchQueryUser, SearchEmailUser, groups]);
   useEffect(() => {
     getAllCategries(6, currentPage + 1, SearchQueryCategory);
   }, [currentPage, SearchQueryCategory]);
@@ -228,12 +260,13 @@ function AppFoodProvider({ children }) {
       CategorySelected
     );
   }, [currentPagerecipe, SearchQueryRecipe, TagSelected, CategorySelected]);
-  console.log(SearchQueryRecipe);
-  console.log(CategorySelected);
-  console.log(TagSelected);
   return (
     <AppContext.Provider
       value={{
+        loginData,
+        usergroup,
+        SaveLoginData,
+        setLoginData,
         categeryId,
         categorylist,
         isLoading,
@@ -284,8 +317,14 @@ function AppFoodProvider({ children }) {
         setcurrentPageuser,
         TotalofPagesUser,
         setTotalOFPagesUser,
-        setSearchCountryUser,
         setSearchEmailUser,
+        imageuser,
+        setImageuser,
+        groups,
+        getCurrentUser,
+        setgroups,
+        currentUser,
+        setCurrentUser,
       }}
     >
       {children}

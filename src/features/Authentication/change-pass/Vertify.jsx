@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { USER_URLS } from "../../../services/Api/APiconfig";
 import { axiosInstances } from "../../../services/Api/ApInstance";
 import { EMAIL_VAILDTION, OTP_VAILDTION } from "../../../services/validation";
+import TitleAuth from "../../../shared/TitleAuth/TitleAuth";
 
 export default function Vertify() {
   const {
@@ -29,10 +30,10 @@ export default function Vertify() {
 
   return (
     <>
-      <div className="title my-3">
-        <h3>Vertify Account</h3>
-        <p> Please enter Your OTP or check your inbox</p>
-      </div>
+      <TitleAuth
+        heading={"Vertify Account"}
+        paragraph={"Please enter Your OTP or check your inbox"}
+      />
       <form onSubmit={handleSubmit(onsubmit)}>
         <div className="input-group mb-3">
           <span className="input-group-text" id="basic-addon1">

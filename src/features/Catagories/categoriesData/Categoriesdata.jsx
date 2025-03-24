@@ -38,7 +38,7 @@ export default function Categoriesdata({ closeAdd, currentCategry, Mode }) {
     <div className="row">
       <div className="popup-overlay ">
         <div
-          className="popup-content bg-light rounded-4 col-5 p-4"
+          className="popup-content bg-light rounded-4  col-10 col-lg-5 col-sm-8  p-4"
           style={{
             boxShadow:
               " rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px",

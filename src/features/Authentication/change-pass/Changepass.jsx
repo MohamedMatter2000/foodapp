@@ -8,6 +8,7 @@ import loge from "../../../assets/images/4 3.jpg";
 import { USER_URLS } from "../../../services/Api/APiconfig";
 import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
 import { PASSWORD_VAILDTION } from "../../../services/validation";
+import TitleAuth from "../../../shared/TitleAuth/TitleAuth";
 export default function Changepass({ closePopup }) {
   const [showconfirmpassword, setshowconfirmpassword] = useState(true);
   const [showpassword, setshowpassword] = useState(true);
@@ -53,7 +54,7 @@ export default function Changepass({ closePopup }) {
   return (
     <div className="popup-overlay row">
       <div
-        className="popup-content  rounded-4 col-6 "
+        className="popup-content  rounded-4 col-6 col-10 col-lg-6 col-sm-8"
         style={{
           boxShadow:
             " rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px",
@@ -63,10 +64,10 @@ export default function Changepass({ closePopup }) {
           <div className="logo-container text-center">
             <img className="w-50" src={loge} alt="" />
           </div>
-          <div className="title my-3">
-            <h3 className="h5">Change Your Password</h3>
-            <p>Enter your details below</p>
-          </div>
+          <TitleAuth
+            heading={"Change Your Password"}
+            paragraph={"Enter your details below"}
+          />
           <form onSubmit={handleSubmit(onsubmit)}>
             <div className="input-group mb-3 ">
               <span className="input-group-text " id="basic-addon1">

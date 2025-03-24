@@ -12,7 +12,9 @@ export default function Authlayout() {
           <div className="row vh-100 align-items-center justify-content-center">
             <div
               className={`${
-                register ? "col-6" : "col-md-5"
+                register
+                  ? "col-6 col-md-10 col-lg-8 col-10 "
+                  : "col-md-8 col-lg-6 col-10 "
               }  bg-white py-3 px-4 rounded-3`}
             >
               <div>

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -17,7 +18,10 @@ import {
   EMAIL_VAILDTION,
   PASSWORD_VAILDTION,
 } from "../../../services/validation";
-export default function Login({ saveLoginData }) {
+import { useFoodApp } from "../../../context/AppFoodProvider";
+import TitleAuth from "../../../shared/TitleAuth/TitleAuth";
+export default function Login() {
+  const { SaveLoginData } = useFoodApp();
   const [showpassword, setshowpassword] = useState(true);
   const {
     register,
@@ -33,7 +37,7 @@ export default function Login({ saveLoginData }) {
     try {
       const response = await axiosInstances.post(USER_URLS.LOGIN, data);
       localStorage.setItem("token", response.data.token);
-      saveLoginData();
+      SaveLoginData();
       toast.success(" Login in Succeclly");
       navigate("/dashboard");
       console.log(response);
@@ -43,10 +47,7 @@ export default function Login({ saveLoginData }) {
   }
   return (
     <>
-      <div className="title my-3">
-        <h3>Log In</h3>
-        <p>Welcom Back! Please enter Your details</p>
-      </div>
+      <TitleAuth heading="Welcom Back! Please enter Your details" />
       <form onSubmit={handleSubmit(onsubmit)}>
         <div className="input-group mb-3">
           <span className="input-group-text  " id="basic-addon1">
@@ -101,7 +102,7 @@ export default function Login({ saveLoginData }) {
             Forget Password?
           </Link>
         </div>
-        <button className="btn btn-success w-100">
+        <button className="btn btn-success w-100" disabled={isSubmitting}>
           {isSubmitting ? <FaSpinner /> : "Log in"}
         </button>
       </form>

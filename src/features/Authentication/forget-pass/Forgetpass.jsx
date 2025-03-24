@@ -6,6 +6,7 @@ import { FaEnvelope, FaSpinner } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { USER_URLS } from "../../../services/Api/APiconfig";
 import { axiosInstances } from "../../../services/Api/ApInstance";
+import TitleAuth from "../../../shared/TitleAuth/TitleAuth";
 export default function Forgetpass() {
   const {
     register,
@@ -29,13 +30,11 @@ export default function Forgetpass() {
   }
   return (
     <div>
-      <div className="title my-3">
-        <h3 className="h5">Forgot Your Password?</h3>
-        <p>
-          No worries! Please enter your email and we will send a password reset
-          link
-        </p>
-      </div>
+      <TitleAuth
+        heading="Forgot Your Password?"
+        paragraph="No worries! Please enter your email and we will send a password reset
+          link"
+      />
       <form onSubmit={handleSubmit(onsubmit)}>
         <div className="input-group mb-3">
           <span className="input-group-text " id="basic-addon1">

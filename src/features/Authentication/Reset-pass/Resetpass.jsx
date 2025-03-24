@@ -18,6 +18,7 @@ import {
   OTP_VAILDTION,
   PASSWORD_VAILDTION,
 } from "../../../services/validation";
+import TitleAuth from "../../../shared/TitleAuth/TitleAuth";
 export default function Resetpass() {
   const [showconfirmpassword, setshowconfirmpassword] = useState(true);
   const [showpassword, setshowpassword] = useState(true);
@@ -61,10 +62,10 @@ export default function Resetpass() {
   }
   return (
     <>
-      <div className="title my-3">
-        <h3> Reset Password</h3>
-        <p>Please Enter Your Otp or Check Your Inbox</p>
-      </div>
+      <TitleAuth
+        heading="Reset Password"
+        paragraph="Please Enter Your Otp or Check Your Inbox"
+      />
       <form onSubmit={handleSubmit(onsubmit)}>
         <div className="input-group mb-3">
           <span className="input-group-text " id="basic-addon1">

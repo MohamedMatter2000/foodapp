@@ -10,6 +10,7 @@
     rgba(0, 0, 0, 0.4)
   );
 }
+
 ul,
 li {
   list-style: none;
@@ -40,6 +41,10 @@ td:last-child {
   background-color: transparent !important;
   border-left: none !important;
 }
+.images {
+  width: 80px;
+  max-width: 100%;
+}
 /* ! header  */
 .header-container {
   background-image: url("../src/assets/images/headerBg.png");
@@ -66,13 +71,30 @@ td:last-child {
   z-index: 6 !important;
 }
 .dropdown-menu.recipes {
-  transform: translate(-70px, 50px) !important;
+  transform: translate(-70px, 20px) !important;
 }
+.dropdown-menu.recipes.ViewUser {
+  transform: translate(-70px, -20px) !important;
+}
+
 .dropdown-menu.recipes::before {
   border-color: transparent transparent #fff transparent;
   right: 25px;
   top: -10px;
 }
+/* .dropdown-menu.user::before {
+  border-color: transparent transparent #1f263e transparent;
+  right: -12px;
+  top: -14px;
+}
+.dropdown-menu.user {
+  background-color: #1f263e !important;
+}
+.dropdown-menu.user .dropdown-item:hover {
+  background-color: #00924d1a !important;
+  border-left: 3px solid #009247;
+  cursor: pointer;
+} */
 .dropdown-menu::before {
   content: "";
   position: absolute;
@@ -116,6 +138,9 @@ td:last-child {
 /* table thead > tr:nth-child(even) {
   background-color: red !important;
 } */
+.aspect-1 {
+  aspect-ratio: 1/1;
+}
 input {
   outline: none;
   border: none;

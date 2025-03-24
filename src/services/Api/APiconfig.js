@@ -8,6 +8,7 @@ export const USER_URLS = {
   VERIFY_ACCOUNT: `/Users/verify`,
   CHANGE_PASSWORD: `/Users/ChangePassword`,
   GET_CURRENT_USER: "Users/currentUser",
+  UPADTE_CURRENT_USER: "Users",
   GET_ALL_USER: `/Users`,
   GET_USER: (id) => `/Users/${id}`,
   GET_USER_BY_ID: (id) => `User/${id}`,
