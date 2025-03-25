@@ -52,15 +52,12 @@ function AppFoodProvider({ children }) {
   const ShowPrevButtonruser = currentPageuser !== 0;
   const SaveLoginData = () => {
     const data = localStorage.getItem("token");
-    const loginDataDecode = jwtDecode(data);
-    console.log(loginDataDecode);
-    setLoginData(loginDataDecode);
-  };
-  useEffect(() => {
-    if (localStorage.getItem("token") != null) {
-      SaveLoginData();
+    if (data) {
+      const loginDataDecode = jwtDecode(data);
+      setLoginData(loginDataDecode);
     }
-  }, []);
+  };
+
   const closePopup = () => {
     setIsPopupVisible(!isPopupVisible);
   };
@@ -231,8 +228,14 @@ function AppFoodProvider({ children }) {
     }
   };
   useEffect(() => {
-    getCurrentUser();
+    if (localStorage.getItem("token")) {
+      SaveLoginData();
+      getCurrentUser();
+    }
   }, []);
+  useEffect(() => {
+    getCurrentUser();
+  }, [loginData]);
   useEffect(() => {
     Allcategorysselected();
   }, []);

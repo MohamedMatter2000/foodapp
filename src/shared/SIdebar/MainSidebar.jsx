@@ -15,7 +15,7 @@ import logeouticon from "../../assets/images/logo-out.png";
 import { toast } from "react-toastify";
 import { useFoodApp } from "../../context/AppFoodProvider";
 export default function MainSidebar({ setIsPopupVisible }) {
-  const { usergroup } = useFoodApp();
+  const { usergroup, setCurrentUser } = useFoodApp();
   const [isCollapse, setCollapse] = useState(false);
   const location = useLocation();
   const navgate = useNavigate();
@@ -26,6 +26,7 @@ export default function MainSidebar({ setIsPopupVisible }) {
     localStorage.removeItem("token");
     toast.info("loge out Succeclly");
     navgate("/login");
+    setCurrentUser(null);
   }
   useEffect(() => {
     const handleResize = () => {

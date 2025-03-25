@@ -6,16 +6,14 @@ export const axiosInstances = axios.create({
 });
 export const PrivateaxiosInstances = axios.create({
   baseURL,
-  headers: { Authorization: localStorage.getItem("token") },
+  // headers: { Authorization: localStorage.getItem("token") },
 });
-const privateApiInstance = axios.create({
-  baseURL,
-});
-privateApiInstance.interceptors.request.use(
+
+PrivateaxiosInstances.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
-      config.headers.Authorization =` Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
