@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import Minheader from "../../../shared/Min-header/Minheader";
+// import Minheader from "../../../shared/Min-header/Minheader";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useFoodApp } from "../../../context/AppFoodProvider";
@@ -138,13 +138,13 @@ export default function Recipedata() {
 
   return (
     <div>
-      <Minheader
+      {/* <Minheader
         title=" the Recipes !"
         discribtion="you can now fill the meals easily using the table and form , click here and sill it with the table !"
         btnName="back to  Recipes"
         recipes="true"
         handleBtnAction={handleToRecipe}
-      />
+      /> */}
       <form onSubmit={handleSubmit(onsubmit)} className="mt-5">
         <div className="input-group mb-3">
           <input

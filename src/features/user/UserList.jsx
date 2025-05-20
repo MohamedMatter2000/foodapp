@@ -13,7 +13,7 @@ import {
 } from "react-icons/md";
 import Paginations from "../../shared/pagination/Pagination";
 import { CiSearch } from "react-icons/ci";
-import Minheader from "../../shared/Min-header/Minheader";
+// import Minheader from "../../shared/Min-header/Minheader";
 export default function UserList() {
   const {
     Users,
@@ -48,10 +48,10 @@ export default function UserList() {
         discribtion="You can now Search your User and filter by Name or Email or Role in Application"
         logo={logo}
       />
-      <Minheader
+      {/* <Minheader
         title={"Users Table Details"}
         discribtion={"You can check all details"}
-      />
+      /> */}
       <div className="Total-search-tag-cate d-flex  flex-column flex-lg-row gap-3   my-3">
         <div
           className="search  w-100 d-flex justify-content-between align-items-center"

@@ -10,14 +10,10 @@
     rgba(0, 0, 0, 0.4)
   );
 }
-
-/* a,
-td:last-child {
-  cursor: pointer;
-} */
-.sidebar-container .sidebar-loge {
-  background-color: transparent;
+li {
+  list-style: none;
 }
+
 .sidebar-container .ps-sidebar-container {
   background-color: #1f263e;
   color: #fff;
@@ -37,6 +33,9 @@ td:last-child {
   background-color: transparent !important;
   border-left: none !important;
 }
+.sidebar-container .loge-li {
+  transition: 0.3s all;
+}
 .images {
   width: 80px;
   max-width: 100%;
@@ -51,13 +50,13 @@ td:last-child {
   background-repeat: no-repeat;
   color: #fff;
 }
-.header-img {
+/* .header-img {
   top: 5px;
-}
-.sub-header-bg {
+} */
+/* .sub-header-bg {
   background-color: rgba(240, 255, 239, 1);
-}
-.dropdown-menu {
+} */
+/* .dropdown-menu {
   position: relative;
   background-color: #fff;
   transform: translate(-80%, 20%) !important;
@@ -65,8 +64,8 @@ td:last-child {
   border: none !important;
   outline: none !important;
   z-index: 6 !important;
-}
-.dropdown-menu.recipes {
+} */
+/* .dropdown-menu.recipes {
   transform: translate(-70px, 20px) !important;
 }
 .dropdown-menu.recipes.ViewUser {
@@ -77,7 +76,7 @@ td:last-child {
   border-color: transparent transparent #fff transparent;
   right: 25px;
   top: -10px;
-}
+} */
 /* .dropdown-menu.user::before {
   border-color: transparent transparent #1f263e transparent;
   right: -12px;
@@ -91,7 +90,7 @@ td:last-child {
   border-left: 3px solid #009247;
   cursor: pointer;
 } */
-.dropdown-menu::before {
+/* .dropdown-menu::before {
   content: "";
   position: absolute;
   border: 15px solid;
@@ -104,7 +103,7 @@ td:last-child {
   top: 50%;
   right: -45px;
   outline: none;
-}
+} */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -118,7 +117,7 @@ td:last-child {
   z-index: 9999;
   transition: all 1s;
 }
-.delete-popup span {
+/* .delete-popup span {
   border: 2px solid #cc0000;
   color: #cc0000;
   width: 35px;
@@ -130,7 +129,7 @@ td:last-child {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
+} */
 /* table thead > tr:nth-child(even) {
   background-color: red !important;
 } */

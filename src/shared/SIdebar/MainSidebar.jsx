@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -14,8 +12,9 @@ import changepassword from "../../assets/images/changepassword.png";
 import logeouticon from "../../assets/images/logo-out.png";
 import { toast } from "react-toastify";
 import { useFoodApp } from "../../context/AppFoodProvider";
-export default function MainSidebar({ setIsPopupVisible }) {
-  const { usergroup, setCurrentUser } = useFoodApp();
+export default function MainSidebar() {
+  const { loginData, setCurrentUser } = useFoodApp();
+  const usergroup = loginData.userGroup;
   const [isCollapse, setCollapse] = useState(false);
   const location = useLocation();
   const navgate = useNavigate();
@@ -36,7 +35,6 @@ export default function MainSidebar({ setIsPopupVisible }) {
         setCollapse(false);
       }
     };
-    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -46,12 +44,12 @@ export default function MainSidebar({ setIsPopupVisible }) {
         <Menu>
           <MenuItem
             onClick={toggleCollapse}
-            className={`pt-4 mb-5 loge-li  ${isCollapse ? "ps-0" : "ps-3"}`}
-            icon={<img className="sidebar-loge" src={icon} />}
+            className={`pt-4 mb-5 loge-li ${isCollapse ? "ps-0" : "ps-3"}`}
+            icon={<img src={icon} />}
           ></MenuItem>
           <MenuItem
             active={location.pathname === "/dashboard"}
-            icon={<img className="sidebar-loge" src={Home} />}
+            icon={<img src={Home} />}
             component={<Link to="/dashboard" />}
           >
             Home
@@ -69,57 +67,44 @@ export default function MainSidebar({ setIsPopupVisible }) {
           >
             Profile
           </MenuItem>
-          {usergroup !== "SystemUser" ? (
+          {usergroup !== "SystemUser" && (
             <MenuItem
               active={location.pathname === "/dashboard/user"}
-              icon={<img className="sidebar-loge" src={User} />}
+              icon={<img src={User} />}
               component={<Link to="/dashboard/user" />}
             >
               User
             </MenuItem>
-          ) : (
-            ""
           )}
-
           <MenuItem
             active={location.pathname === "/dashboard/recipes"}
-            icon={<img className="sidebar-loge" src={recipe} />}
+            icon={<img src={recipe} />}
             component={<Link to="/dashboard/recipes" />}
           >
             Recipes
           </MenuItem>
-          {usergroup !== "SystemUser" ? (
+          {usergroup !== "SystemUser" && (
             <MenuItem
               active={location.pathname === "/dashboard/categories"}
-              icon={<img className="sidebar-loge" src={Categories} />}
+              icon={<img src={Categories} />}
               component={<Link to="/dashboard/categories" />}
             >
               Categories
             </MenuItem>
-          ) : (
-            ""
           )}
-          {usergroup === "SystemUser" ? (
+          {usergroup === "SystemUser" && (
             <MenuItem
               active={location.pathname === "/dashboard/Favorites"}
-              icon={<img className="sidebar-loge" src={Fav} />}
+              icon={<img src={Fav} />}
               component={<Link to="/dashboard/Favorites" />}
             >
               Favorites
             </MenuItem>
-          ) : (
-            ""
           )}
-          <MenuItem
-            onClick={() => setIsPopupVisible(true)}
-            icon={<img className="sidebar-loge" src={changepassword} />}
-          >
+          <MenuItem icon={<img src={changepassword} />}>
             Change Password
           </MenuItem>
-          <MenuItem
-            onClick={logeout}
-            icon={<img className="sidebar-loge" src={logeouticon} />}
-          >
+          <MenuItem onClick={logeout} icon={<img src={logeouticon} />}>
             Logeout
           </MenuItem>
         </Menu>

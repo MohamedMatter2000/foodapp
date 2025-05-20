@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../../shared/Header/Header";
-import Minheader from "../../../shared/Min-header/Minheader";
+import Minheader from "../../../shared/SubHeader/SubHeader";
 import logo from "../../../assets/images/recipe-img.png";
 import { MdDelete, MdOutlineEditCalendar, MdViewList } from "react-icons/md";
 import { BsThreeDots } from "react-icons/bs";
