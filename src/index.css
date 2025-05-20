@@ -11,14 +11,10 @@
   );
 }
 
-ul,
-li {
-  list-style: none;
-}
-a,
+/* a,
 td:last-child {
   cursor: pointer;
-}
+} */
 .sidebar-container .sidebar-loge {
   background-color: transparent;
 }

@@ -1,11 +1,11 @@
 import { RouterProvider } from "react-router";
 import { Bounce, ToastContainer } from "react-toastify";
 import { createBrowserRouter } from "react-router-dom";
-import Forgetpass from "./features/Authentication/forget-pass/Forgetpass";
 import Login from "./features/Authentication/Login/Login";
 import Register from "./features/Authentication/Register/Register";
-import Resetpass from "./features/Authentication/Reset-pass/Resetpass";
-import Vertify from "./features/Authentication/vertify-account/Vertify";
+import Forgetpass from "./features/Authentication/ForgetPassword/ForgetPassword";
+import Resetpass from "./features/Authentication/ResetPassword/Resetpass";
+import Vertify from "./features/Authentication/VertifyAccount/Vertify";
 import Dashboard from "./features/Dashboard/Dashboard";
 import Recipedata from "./features/Recipes/RecipeDate/Recipedata";
 import Recipelist from "./features/Recipes/RecipeList/Recipelist";
@@ -26,12 +26,12 @@ function App() {
       element: <Authlayout />,
       errorElement: <Notfound />,
       children: [
-        { index: "*", element: <Login /> },
-        { path: "login", element: <Login /> },
-        { path: "register", element: <Register /> },
-        { path: "forget-pass", element: <Forgetpass /> },
-        { path: "reset-pass", element: <Resetpass /> },
-        { path: "vertify-account", element: <Vertify /> },
+        { index: true, element: <Login /> },
+        { path: "Login", element: <Login /> },
+        { path: "Register", element: <Register /> },
+        { path: "ForgetPassword", element: <Forgetpass /> },
+        { path: "ResetPassword", element: <Resetpass /> },
+        { path: "VertifyAccount", element: <Vertify /> },
       ],
     },
     {

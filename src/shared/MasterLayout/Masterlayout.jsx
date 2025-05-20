@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import Changepass from "../../features/Authentication/change-pass/Changepass";
+import Changepass from "../../features/Authentication/Changepassword/Changepassword";
 import Navbar from "../Navbar/Navbar";
 import MainSidebar from "../SIdebar/MainSidebar";
 export default function Masterlayout() {
