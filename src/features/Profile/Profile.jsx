@@ -6,13 +6,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { imageURL, USER_URLS } from "../../services/Api/APiconfig";
 import { PrivateaxiosInstances } from "../../services/Api/ApInstance";
-import {
-  COUNTRY_VAILDTION,
-  EMAIL_VAILDTION,
-  PASSWORD_VAILDTION,
-  PHONE_VAILDTION,
-  USER_NAME,
-} from "../../services/validation";
+// import {
+//   COUNTRY_VAILDTION,
+//   EMAIL_VAILDTION,
+//   PASSWORD_VAILDTION,
+//   PHONE_VAILDTION,
+//   USER_NAME,
+// } from "../../services/validation";
 import {
   FaLock,
   FaEnvelope,
@@ -24,7 +24,7 @@ import {
 import { FaEarthAmericas } from "react-icons/fa6";
 import { useEffect } from "react";
 import { useFoodApp } from "../../context/AppFoodProvider";
-import TitleAuth from "../../shared/TitleAuth/TitleAuth";
+// import TitleAuth from "../../shared/TitleAuth/TitleAuth";
 export default function Profile() {
   const { imageuser, setImageuser, getCurrentUser, currentUser } = useFoodApp();
   const [showpassword, setshowpassword] = useState(true);
@@ -114,10 +114,10 @@ export default function Profile() {
   }, [currentUser, setValue, imageuser, setImageuser]);
   return (
     <>
-      <TitleAuth
+      {/* <TitleAuth
         heading="Update"
         paragraph="Welcom Back! Please enter Your details"
-      />
+      /> */}
       <form onSubmit={handleSubmit(onsubmit)}>
         <div className="container-form d-flex flex-column  gap-4">
           <div>
@@ -152,7 +152,7 @@ export default function Profile() {
                   placeholder=" User Name"
                   aria-label="Username"
                   aria-describedby="basic-addon1"
-                  {...register("userName", USER_NAME)}
+                  {...register("userName")}
                 />
               </div>
               {errors.userName && (
@@ -170,7 +170,7 @@ export default function Profile() {
                   placeholder="country"
                   aria-label="Country"
                   aria-describedby="basic-addon1"
-                  {...register("country", COUNTRY_VAILDTION)}
+                  {...register("country")}
                 />
               </div>
               {errors.country && (
@@ -189,7 +189,7 @@ export default function Profile() {
                     placeholder=" Enter Your Email"
                     aria-label="Username"
                     aria-describedby="basic-addon1"
-                    {...register("email", EMAIL_VAILDTION)}
+                    {...register("email")}
                   />
                 </div>
                 {errors.email && (
@@ -207,7 +207,7 @@ export default function Profile() {
                     placeholder="Enter Phone"
                     aria-label="Country"
                     aria-describedby="basic-addon1"
-                    {...register("phoneNumber", PHONE_VAILDTION)}
+                    {...register("phoneNumber")}
                   />
                 </div>
                 {errors.phoneNumber && (
@@ -226,7 +226,7 @@ export default function Profile() {
                   placeholder=" Enter Your password"
                   aria-label="confirmPassword"
                   aria-describedby="basic-addon1"
-                  {...register("confirmPassword", PASSWORD_VAILDTION)}
+                  {...register("confirmPassword")}
                 />
                 <span
                   className="input-group-text fs-4 bg-transparent"
