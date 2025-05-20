@@ -10,7 +10,7 @@ import { useState } from "react";
 import Paginations from "../../../shared/pagination/Pagination";
 import { CiSearch } from "react-icons/ci";
 import Categoriesdata from "../categoriesData/Categoriesdata";
-import Minheader from "../../../shared/Min-header/Minheader";
+import SubHeader from "../../../shared/SubHeader/SubHeader";
 export default function Categorieslist() {
   const [currentCategry, setcurrentCategry] = useState("");
   const [show, setShow] = useState(false);
@@ -57,7 +57,7 @@ export default function Categorieslist() {
         discribtion="You can now add your items that any user can order it from the Application and you can edit"
         logo={logo}
       />
-      <Minheader
+      <SubHeader
         title={"Categories Table Details"}
         discribtion={"You can check all details"}
         btnName={"Add New Category"}

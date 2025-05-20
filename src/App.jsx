@@ -6,7 +6,6 @@ import Register from "./features/Authentication/Register/Register";
 import Forgetpass from "./features/Authentication/ForgetPassword/ForgetPassword";
 import Resetpass from "./features/Authentication/ResetPassword/Resetpass";
 import Vertify from "./features/Authentication/VertifyAccount/Vertify";
-import Dashboard from "./features/Dashboard/Dashboard";
 import Recipedata from "./features/Recipes/RecipeDate/Recipedata";
 import Recipelist from "./features/Recipes/RecipeList/Recipelist";
 import Authlayout from "./shared/Authlayout/Authlayout";
@@ -18,6 +17,7 @@ import { AppFoodProvider } from "./context/AppFoodProvider";
 import Categorieslist from "./features/Catagories/categoriesList/Categorieslist";
 import Favorites from "./features/Favorite/Favorites";
 import Profile from "./features/Profile/Profile";
+import Dashboard from "./features/Dashboard/Dashboard";
 
 function App() {
   const router = createBrowserRouter([

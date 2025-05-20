@@ -17,7 +17,6 @@ function AppFoodProvider({ children }) {
     let Token = localStorage.getItem("token");
     return Token ? jwtDecode(Token) : null;
   });
-  const usergroup = loginData?.userGroup;
   const [recipeId, setrecipeId] = useState(0);
   const [imageuser, setImageuser] = useState(null);
   const [recipesylist, setrecipeslist] = useState([]);
@@ -267,7 +266,6 @@ function AppFoodProvider({ children }) {
     <AppContext.Provider
       value={{
         loginData,
-        usergroup,
         SaveLoginData,
         setLoginData,
         categeryId,

@@ -2,9 +2,9 @@ import { useNavigate } from "react-router-dom";
 import logo from "../../assets/images/welcomeImg.png";
 import { useFoodApp } from "../../context/AppFoodProvider";
 import Header from "../../shared/Header/Header";
-import Minheader from "../../shared/Min-header/Minheader";
+import Minheader from "../../shared/SubHeader/SubHeader";
 export default function Dashboard() {
-  const { loginData, usergroup } = useFoodApp();
+  const { loginData } = useFoodApp();
   const navigate = useNavigate();
   const handleAddRecipe = () => {
     navigate("/dashboard/recipes/new-recipe");
@@ -12,7 +12,6 @@ export default function Dashboard() {
   const handleToRecipe = () => {
     navigate("/dashboard/recipes");
   };
-  console.log(loginData);
   return (
     <div>
       <Header
@@ -22,15 +21,19 @@ export default function Dashboard() {
       />
       <Minheader
         title={
-          usergroup !== "SystemUser"
+          loginData.usergroup !== "SystemUser"
             ? "Fill the Recipes !"
             : "Show the Recipes !"
         }
         discribtion="you can now fill the meals easily using the table and form , click here and sill it with the table !"
-        btnName={usergroup !== "SystemUser" ? "Fill Recipes !" : "Recipes !"}
-        recipes="true"
+        btnName={
+          loginData.usergroup !== "SystemUser" ? "Fill Recipes !" : "Recipes !"
+        }
+        recipes
         handleBtnAction={
-          usergroup !== "SystemUser" ? handleAddRecipe : handleToRecipe
+          loginData.usergroup !== "SystemUser"
+            ? handleAddRecipe
+            : handleToRecipe
         }
       />
     </div>
