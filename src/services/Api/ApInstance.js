@@ -1,6 +1,5 @@
 import axios from "axios";
 import { baseURL } from "./APiconfig";
-
 export const axiosInstances = axios.create({
   baseURL,
 });

@@ -6,7 +6,7 @@ import logo from "../../../assets/images/recipe-img.png";
 import { MdDelete, MdOutlineEditCalendar, MdViewList } from "react-icons/md";
 import { BsThreeDots } from "react-icons/bs";
 import NotData from "../../../shared/NoDate/NotData";
-import DeletConfirmation from "../../../shared/DeleteConfirmation/DeletConfirmation";
+import DeletConfirmation from "../../../shared/DeleteConfirmation/DeleteConfirmation";
 import { imageURL } from "../../../services/Api/APiconfig";
 import { useFoodApp } from "../../../context/AppFoodProvider";
 import Spinner from "../../../shared/NoDate/Spinner";

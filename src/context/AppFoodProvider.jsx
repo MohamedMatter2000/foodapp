@@ -23,32 +23,25 @@ function AppFoodProvider({ children }) {
   const [categorylist, setcategorylist] = useState([]);
   const [tagslist, settagslist] = useState([]);
   const [Allcategoryslistname, settAllcategoryslistname] = useState([]);
-  const [Users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [userId, setuserId] = useState(0);
   const [chooseDelete, setChooseDelete] = useState("categery");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [categeryId, setcategeryId] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [TotalofPages, setTotalOFPages] = useState(0);
   const [TotalofPagesRecipe, setTotalOFPagesRecipe] = useState(0);
-  const [TotalofPagesUser, setTotalOFPagesUser] = useState(0);
   const [SearchQueryCategory, setSearchQueryCategory] = useState("");
   const [CategorySelected, setCategorySelected] = useState("");
   const [SearchQueryRecipe, setSearchQueryRecipe] = useState("");
   const [SearchQueryUser, setSearchQueryUser] = useState("");
   const [groups, setgroups] = useState();
-  const [SearchEmailUser, setSearchEmailUser] = useState("");
   const [TagSelected, setTagSelected] = useState("");
   const [currentPage, setcurrentPage] = useState(0);
   const [currentPagerecipe, setcurrentPagerecipe] = useState(0);
-  const [currentPageuser, setcurrentPageuser] = useState(0);
   const ShowNextButton = currentPage !== TotalofPages - 1;
   const ShowPrevButton = currentPage !== 0;
   const ShowNextButtonrecipe = currentPagerecipe !== TotalofPagesRecipe - 1;
   const ShowPrevButtonrecipe = currentPagerecipe !== 0;
-  const ShowNextButtonuser = currentPageuser !== TotalofPagesUser - 1;
-  const ShowPrevButtonruser = currentPageuser !== 0;
   const SaveLoginData = () => {
     const data = localStorage.getItem("token");
     if (data) {
@@ -120,27 +113,7 @@ function AppFoodProvider({ children }) {
       console.log(error);
     }
   }
-  async function getAllRecipe(pageSize, pageNumber, name, tagId, categoryId) {
-    setIsLoading(true);
-    try {
-      const response = await PrivateaxiosInstances.get(RECEIPE_URL.GET_RECIPE, {
-        params: {
-          pageSize: pageSize,
-          pageNumber: pageNumber,
-          name: name,
-          tagId: tagId,
-          categoryId: categoryId,
-        },
-      });
-      setrecipeslist(response?.data?.data);
-      setTotalOFPagesRecipe(response?.data?.totalNumberOfPages);
-      console.log(TotalofPagesRecipe);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+
   async function deletrecipes(id) {
     console.log(id);
     try {
@@ -154,42 +127,6 @@ function AppFoodProvider({ children }) {
       console.log(error);
     }
   }
-  async function getUsers(pageSize, pageNumber, userName, email, groups) {
-    setIsLoading(true);
-    try {
-      const res = await PrivateaxiosInstances.get(USER_URLS.GET_ALL_USER, {
-        params: {
-          pageSize: pageSize,
-          pageNumber: pageNumber,
-          userName: userName,
-          email: email,
-          groups: groups,
-        },
-      });
-      console.log(res?.data?.data);
-      setUsers(res?.data?.data);
-      setTotalOFPagesUser(res?.data?.totalNumberOfPages);
-    } catch (error) {
-      setUsers([]);
-      console.log(error || "Faild to get data");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  const deletetUsers = async (id) => {
-    console.log(id);
-    setIsLoading(true);
-    try {
-      const res = await PrivateaxiosInstances.delete(USER_URLS.DELETE_USER(id));
-      console.log(res?.data?.data);
-      toast.success(" The user has been deleted successfully");
-      getUsers();
-    } catch (error) {
-      console.log(error || "Faild to get data");
-    } finally {
-      setIsLoading(false);
-    }
-  };
   async function getAllTags() {
     try {
       const res = await PrivateaxiosInstances.get(TAG_URL.GET_ALL_TAG);
@@ -226,6 +163,27 @@ function AppFoodProvider({ children }) {
       console.log(error);
     }
   };
+  async function getAllRecipe(pageSize, pageNumber, name, tagId, categoryId) {
+    setIsLoading(true);
+    try {
+      const response = await PrivateaxiosInstances.get(RECEIPE_URL.GET_RECIPE, {
+        params: {
+          pageSize: pageSize,
+          pageNumber: pageNumber,
+          name: name,
+          tagId: tagId,
+          categoryId: categoryId,
+        },
+      });
+      setrecipeslist(response?.data?.data);
+      setTotalOFPagesRecipe(response?.data?.totalNumberOfPages);
+      console.log(TotalofPagesRecipe);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
   useEffect(() => {
     if (localStorage.getItem("token")) {
       SaveLoginData();
@@ -241,15 +199,7 @@ function AppFoodProvider({ children }) {
   useEffect(() => {
     getAllTags();
   }, []);
-  useEffect(() => {
-    getUsers(
-      6,
-      currentPageuser + 1,
-      SearchQueryUser,
-      SearchEmailUser,
-      groups === "both" ? null : groups
-    );
-  }, [currentPageuser, SearchQueryUser, SearchEmailUser, groups]);
+
   useEffect(() => {
     getAllCategries(6, currentPage + 1, SearchQueryCategory);
   }, [currentPage, SearchQueryCategory]);
@@ -277,13 +227,9 @@ function AppFoodProvider({ children }) {
         isPopupVisible,
         setIsPopupVisible,
         AddandEditcategry,
-        getUsers,
-        Users,
         chooseDelete,
         setChooseDelete,
-        deletetUsers,
-        userId,
-        setuserId,
+        // deletetUsers,
         recipesylist,
         setrecipeslist,
         deletrecipes,
@@ -313,12 +259,6 @@ function AppFoodProvider({ children }) {
         getAllRecipe,
         setSearchQueryUser,
         SearchQueryUser,
-        ShowPrevButtonruser,
-        ShowNextButtonuser,
-        setcurrentPageuser,
-        TotalofPagesUser,
-        setTotalOFPagesUser,
-        setSearchEmailUser,
         imageuser,
         setImageuser,
         groups,

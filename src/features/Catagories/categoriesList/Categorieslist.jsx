@@ -1,7 +1,7 @@
 import { BsThreeDots } from "react-icons/bs";
 import { MdDelete, MdOutlineEditCalendar, MdViewList } from "react-icons/md";
 import { useFoodApp } from "../../../context/AppFoodProvider";
-import DeletConfirmation from "../../../shared/DeleteConfirmation/DeletConfirmation";
+import DeletConfirmation from "../../../shared/DeleteConfirmation/DeleteConfirmation";
 import Header from "../../../shared/Header/Header";
 import logo from "../../../assets/images/recipe-img.png";
 import NotData from "../../../shared/NoDate/NotData";

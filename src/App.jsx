@@ -11,7 +11,7 @@ import Recipelist from "./features/Recipes/RecipeList/Recipelist";
 import Authlayout from "./shared/Authlayout/Authlayout";
 import Masterlayout from "./shared/MasterLayout/Masterlayout";
 import Notfound from "./shared/Notfound/Notfound";
-import UserList from "./features/user/UserList";
+import UserList from "./features/user/UserList/UserList";
 import ProtectRoute from "./shared/ProtectRoute/ProtectRoute";
 import { AppFoodProvider } from "./context/AppFoodProvider";
 import Categorieslist from "./features/Catagories/categoriesList/Categorieslist";
