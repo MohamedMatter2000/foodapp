@@ -27,7 +27,7 @@ function Paginations({
           ) : null
         }
         previousClassName={
-          ShowPrevButton ? " px-3 py-1  bg-success rounded-2 text-light" : ""
+          ShowPrevButton ? "px-3 py-1  bg-success rounded-2 text-light" : ""
         }
         nextClassName={
           ShowNextButton ? "px-3 py-1 bg-success rounded-2 text-light" : ""

@@ -133,6 +133,10 @@ li {
 /* table thead > tr:nth-child(even) {
   background-color: red !important;
 } */
+.dropdown-toggle::after {
+  display: none !important;
+}
+
 .aspect-1 {
   aspect-ratio: 1/1;
 }

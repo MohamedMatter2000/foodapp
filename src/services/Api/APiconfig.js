@@ -1,5 +1,7 @@
-export const imageURL = "https://upskilling-egypt.com:3006/";
-export const baseURL = "https://upskilling-egypt.com:3006/api/v1";
+// export const imageURL = "https://upskilling-egypt.com:3006/";
+export const imageURL = "/images/";
+// export const baseURL = "https://upskilling-egypt.com:3006/api/v1";
+export const baseURL = "/api";
 export const USER_URLS = {
   LOGIN: `/Users/Login`,
   REGISTER: `/Users/Register`,
