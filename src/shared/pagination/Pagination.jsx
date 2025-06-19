@@ -10,6 +10,9 @@ function Paginations({
   function handlePagesChange({ selected }) {
     setcurrentPage(selected);
   }
+  if (TotalofPages === 1) {
+    return;
+  }
   return (
     <div className="paginations">
       <ReactPaginate

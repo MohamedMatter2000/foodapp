@@ -1,55 +1,118 @@
-import { BsThreeDots } from "react-icons/bs";
-import { MdDelete, MdOutlineEditCalendar, MdViewList } from "react-icons/md";
-import { useFoodApp } from "../../../context/AppFoodProvider";
 import DeletConfirmation from "../../../shared/DeleteConfirmation/DeleteConfirmation";
 import Header from "../../../shared/Header/Header";
 import logo from "../../../assets/images/recipe-img.png";
-import NotData from "../../../shared/NoDate/NotData";
-import Spinner from "../../../shared/NoDate/Spinner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Paginations from "../../../shared/pagination/Pagination";
 import { CiSearch } from "react-icons/ci";
 import Categoriesdata from "../categoriesData/Categoriesdata";
 import SubHeader from "../../../shared/SubHeader/SubHeader";
+import usePagination from "../../../hooks/usePagination";
+import useModal from "../../../hooks/useModal";
+import Table from "../../../shared/ReusableTable/Table";
+import ActionTable from "../../../shared/ActionTable/ActionTable";
+import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
+import { CATEGORY_URL } from "../../../services/Api/APiconfig";
+import { toast } from "react-toastify";
 export default function Categorieslist() {
-  const [currentCategry, setcurrentCategry] = useState("");
-  const [show, setShow] = useState(false);
-  const [Mode, setMode] = useState("");
-  const CloseAndOpen = () => {
-    setShow(!show);
-  };
   const {
-    categorylist,
-    closePopup,
-    isPopupVisible,
-    setcategeryId,
-    isLoading,
-    setSearchQueryCategory,
     TotalofPages,
+    getTotalofPages,
+    currentPage,
     setcurrentPage,
     ShowNextButton,
     ShowPrevButton,
-  } = useFoodApp();
-  function handleSearchBar(e) {
-    setSearchQueryCategory(e.target.value);
+  } = usePagination();
+  const { isOpen, closeModal, openModal } = useModal();
+  const [categories, setcategories] = useState([]);
+  const [categoryId, setcategoryId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchname, setsearchname] = useState("");
+  const currentCategory = categories?.filter(
+    (item) => item?.id === categoryId
+  )[0];
+  async function getAllCategries(pageSize, pageNumber, name) {
+    setIsLoading(true);
+    try {
+      const response = await PrivateaxiosInstances.get(
+        CATEGORY_URL.GET_CATOGERY,
+        {
+          params: {
+            pageSize: pageSize,
+            pageNumber: pageNumber,
+            name: name,
+          },
+        }
+      );
+      setcategories(response.data.data);
+      getTotalofPages(response?.data?.totalNumberOfPages);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   }
+  const handleDeleteCategory = async () => {
+    setIsLoading(true);
+    try {
+      await PrivateaxiosInstances.delete(
+        CATEGORY_URL.DELETE_CATOGERY(categoryId)
+      );
+      getAllCategries(6, currentPage + 1);
+      toast.success("Category was removed successfully");
+    } catch (error) {
+      toast.error("Failed to remove Category");
+    } finally {
+      setIsLoading(false);
+      closeModal();
+    }
+  };
+  const handleSearchName = (e) => {
+    setsearchname(e.target.value);
+  };
+  const handleViewDelete = (id) => {
+    setcategoryId(id);
+    openModal("DeleteCategory");
+  };
   function handleAddCategory() {
-    setMode("Add");
-    CloseAndOpen();
+    openModal("AddCategory");
+    setcategoryId("");
   }
-  function handleEditCategory(category) {
-    setcurrentCategry(category);
-    CloseAndOpen();
-    setMode("Update");
+  function handleViewEdit(id) {
+    setcategoryId(id);
+    openModal("AddCategory");
   }
-  function handleDeleteCategory(id) {
-    console.log(id);
-    setcategeryId(id);
-    closePopup();
-  }
-
-  console.log(currentCategry);
-
+  useEffect(() => {
+    getAllCategries(6, currentPage + 1, searchname);
+  }, [currentPage, searchname]);
+  const columns = [
+    {
+      key: "id",
+      title: "Id",
+      render: (row) => row?.id,
+    },
+    { key: "Name", title: "Name", render: (row) => row?.name },
+    {
+      key: "creationDate",
+      title: "Create at",
+      dateField: true,
+      render: (row) => {
+        return new Date(row?.creationDate).toLocaleString();
+      },
+    },
+    {
+      key: "action",
+      title: "Action",
+      render: (row) => (
+        <ActionTable
+          data={row}
+          showEdit={true}
+          showView={false}
+          onDelete={handleViewDelete}
+          onEdit={handleViewEdit}
+        />
+      ),
+    },
+  ];
   return (
     <>
       <Header
@@ -63,110 +126,46 @@ export default function Categorieslist() {
         btnName={"Add New Category"}
         handleBtnAction={handleAddCategory}
       />
-      <div
-        className="search mb-3  w-100 d-flex justify-content-between align-items-center"
-        style={{ marginLeft: "-20px" }}
-      >
-        <div
-          className=" position-relative fs-5 "
-          style={{ left: "40px", marginTop: "-4px" }}
-        >
-          <CiSearch />
+      <div className="search-input-wrapper position-relative w-100 mb-4">
+        <div className="search-icon position-absolute top-50 translate-middle-y ms-3">
+          <CiSearch className="fs-5 text-muted" />
         </div>
         <input
           type="search"
-          placeholder="Search"
-          className="w-100  px-5 py-2 rounded-3  border-1 border"
-          onChange={handleSearchBar}
+          placeholder="Search by name"
+          className="form-control ps-5 py-2 rounded-3 border"
+          onChange={handleSearchName}
         />
       </div>
-      <div className="table-responsive">
-        <table className="table table-striped table-borderless  table-hover text-center align-middle">
-          <thead className="table-secondary overflow-visible">
-            <tr>
-              <th scope="col" className="px-1 py-4 rounded-start-3 text-nowrap">
-                Id
-              </th>
-              <th scope="col" className="px-1 py-4 ">
-                Name
-              </th>
-              <th scope="col" className="px-1 py-4 ">
-                Create at
-              </th>
-              <th scope="col" className="px-1 py-4 ">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {categorylist?.length > 0 ? (
-              categorylist.map((category) => (
-                <tr key={category?.id}>
-                  <td data-label="Item Name">{category?.id}</td>
-                  <td data-label="Price">{category?.name} </td>
-                  <td data-label="Description" className="text-wrap">
-                    {new Date(category?.creationDate).toLocaleString()}
-                  </td>
-                  <td
-                    data-label="Action"
-                    className="dropup-center dropup  px-4 py-4 "
-                  >
-                    <BsThreeDots
-                      className="fa fa-ellipsis  dropup-center dropup fs-5 "
-                      data-bs-toggle="dropdown"
-                    />
-                    <ul className="dropdown-menu  border-none w-100  mt-2 rounded-2">
-                      <li>
-                        <a className="dropdown-item d-flex  align-items-center gap-2">
-                          <MdViewList className="text-success fs-4" /> View
-                        </a>
-                      </li>
-                      <li onClick={() => handleEditCategory(category)}>
-                        <a className="dropdown-item d-flex  align-items-center gap-2">
-                          <MdOutlineEditCalendar className="text-success fs-4 " />
-                          Edit
-                        </a>
-                      </li>
-                      <li onClick={() => handleDeleteCategory(category.id)}>
-                        <a className="dropdown-item d-flex  align-items-center gap-2">
-                          <MdDelete
-                            className="text-success fs-4 cursor-pointer "
-                            data-toggle="modal"
-                            data-target="#exampleModal"
-                          />
-                          Delete
-                        </a>
-                      </li>
-                    </ul>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td className="text-center" colSpan={7}>
-                  {isLoading ? <Spinner /> : <NotData />}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {categorylist?.length > 0 ? (
+      <Table
+        columns={columns}
+        data={categories}
+        isLoading={isLoading}
+        message={"No Category Available"}
+      />
+      {isOpen("AddCategory") && (
+        <Categoriesdata
+          closeAdd={closeModal}
+          currentCategory={currentCategory}
+          refreshCategories={() =>
+            getAllCategries(6, currentPage + 1, searchname)
+          }
+        />
+      )}
+      {isOpen("DeleteCategory") && (
+        <DeletConfirmation
+          show={isOpen("DeleteCategory")}
+          onHide={closeModal}
+          onDelete={() => handleDeleteCategory(categoryId)}
+          isLoading={isLoading}
+        />
+      )}
+      {categories.length >= 0 && (
         <Paginations
           TotalofPages={TotalofPages}
           setcurrentPage={setcurrentPage}
           ShowNextButton={ShowNextButton}
           ShowPrevButton={ShowPrevButton}
-        />
-      ) : null}
-      {isPopupVisible && <DeletConfirmation />}
-      {show && (
-        <Categoriesdata
-          closeAdd={CloseAndOpen}
-          currentCategry={currentCategry}
-          show={show}
-          Mode={Mode}
         />
       )}
     </>

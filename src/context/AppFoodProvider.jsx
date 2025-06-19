@@ -20,17 +20,12 @@ function AppFoodProvider({ children }) {
   const [recipeId, setrecipeId] = useState(0);
   const [imageuser, setImageuser] = useState(null);
   const [recipesylist, setrecipeslist] = useState([]);
-  const [categorylist, setcategorylist] = useState([]);
   const [tagslist, settagslist] = useState([]);
-  const [Allcategoryslistname, settAllcategoryslistname] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [chooseDelete, setChooseDelete] = useState("categery");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [categeryId, setcategeryId] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [TotalofPages, setTotalOFPages] = useState(0);
   const [TotalofPagesRecipe, setTotalOFPagesRecipe] = useState(0);
-  const [SearchQueryCategory, setSearchQueryCategory] = useState("");
   const [CategorySelected, setCategorySelected] = useState("");
   const [SearchQueryRecipe, setSearchQueryRecipe] = useState("");
   const [SearchQueryUser, setSearchQueryUser] = useState("");
@@ -53,67 +48,6 @@ function AppFoodProvider({ children }) {
   const closePopup = () => {
     setIsPopupVisible(!isPopupVisible);
   };
-  async function getAllCategries(pageSize, pageNumber, name) {
-    setIsLoading(true);
-    try {
-      const response = await PrivateaxiosInstances.get(
-        CATEGORY_URL.GET_CATOGERY,
-        {
-          params: {
-            pageSize: pageSize,
-            pageNumber: pageNumber,
-            name: name,
-          },
-        }
-      );
-      setcategorylist(response.data.data);
-      setTotalOFPages(response?.data?.totalNumberOfPages);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  async function AddandEditcategry(data, Mode, id) {
-    if (Mode === "Update") {
-      try {
-        const response = await PrivateaxiosInstances.put(
-          CATEGORY_URL.EDIT_CATOGERY(id),
-          data
-        );
-        getAllCategries();
-        toast.info(" Edit Category Succeclly");
-        console.log(response);
-      } catch (errors) {
-        toast.error(errors.response.data.message);
-      }
-    } else {
-      try {
-        const response = await PrivateaxiosInstances.post(
-          CATEGORY_URL.ADD_CATOGERY,
-          data
-        );
-        getAllCategries();
-        toast.success(" Add Category Succeclly");
-        console.log(response);
-      } catch (errors) {
-        toast.error(errors.response.data.message);
-      }
-    }
-  }
-  async function deletcategry(id) {
-    console.log(id);
-    try {
-      const response = await PrivateaxiosInstances.delete(
-        CATEGORY_URL.DELETE_CATOGERY(categeryId)
-      );
-      toast.success(" Delete Category Succeclly");
-      getAllCategries();
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   async function deletrecipes(id) {
     console.log(id);
     try {
@@ -134,23 +68,6 @@ function AppFoodProvider({ children }) {
       settagslist(res?.data);
     } catch (error) {
       console.log(error || "Faild to get data");
-    }
-  }
-  async function Allcategorysselected() {
-    try {
-      const response = await PrivateaxiosInstances.get(
-        CATEGORY_URL.GET_CATOGERY,
-        {
-          params: {
-            pageSize: 50,
-            pageNumber: 1,
-          },
-        }
-      );
-      settAllcategoryslistname(response.data.data);
-      setTotalOFPages(response?.data?.totalNumberOfPages);
-    } catch (error) {
-      console.log(error);
     }
   }
   const getCurrentUser = async () => {
@@ -194,15 +111,8 @@ function AppFoodProvider({ children }) {
     getCurrentUser();
   }, [loginData]);
   useEffect(() => {
-    Allcategorysselected();
-  }, []);
-  useEffect(() => {
     getAllTags();
   }, []);
-
-  useEffect(() => {
-    getAllCategries(6, currentPage + 1, SearchQueryCategory);
-  }, [currentPage, SearchQueryCategory]);
   useEffect(() => {
     getAllRecipe(
       10,
@@ -218,17 +128,10 @@ function AppFoodProvider({ children }) {
         loginData,
         SaveLoginData,
         setLoginData,
-        categeryId,
-        categorylist,
         isLoading,
         closePopup,
-        setcategeryId,
-        deletcategry,
         isPopupVisible,
         setIsPopupVisible,
-        AddandEditcategry,
-        chooseDelete,
-        setChooseDelete,
         // deletetUsers,
         recipesylist,
         setrecipeslist,
@@ -240,8 +143,6 @@ function AppFoodProvider({ children }) {
         setcurrentPage,
         ShowNextButton,
         ShowPrevButton,
-        SearchQueryCategory,
-        setSearchQueryCategory,
         TotalofPagesRecipe,
         setTotalOFPagesRecipe,
         currentPagerecipe,
@@ -249,13 +150,10 @@ function AppFoodProvider({ children }) {
         ShowPrevButtonrecipe,
         ShowNextButtonrecipe,
         tagslist,
-        Allcategoryslistname,
-        settAllcategoryslistname,
         setTagSelected,
         setSearchQueryRecipe,
         setCategorySelected,
         getAllTags,
-        Allcategorysselected,
         getAllRecipe,
         setSearchQueryUser,
         SearchQueryUser,

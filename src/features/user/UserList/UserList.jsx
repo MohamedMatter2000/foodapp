@@ -213,14 +213,14 @@ export default function UserList() {
           isLoading={isLoading}
         />
       )}
-      {users.length > 0 ? (
+      {users.length > 0 && (
         <Paginations
           TotalofPages={TotalofPages}
           setcurrentPage={setcurrentPage}
           ShowNextButton={ShowNextButton}
           ShowPrevButton={ShowPrevButton}
         />
-      ) : null}
+      )}
     </>
   );
 }

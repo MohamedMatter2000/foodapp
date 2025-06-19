@@ -1,53 +1,106 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
+// /* eslint-disable react/prop-types */
+// /* eslint-disable no-unused-vars */
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import logo from "../../assets/images/ComfirmDelete.png";
-import { FaSpinner } from "react-icons/fa";
+import { FaSpinner, FaTrashAlt } from "react-icons/fa";
 export default function DeleteConfirmation({
   show,
   onHide,
   onDelete,
-  isLoading,
+  isLoading = false,
+  title = "Delete This Item?",
+  message = "Are you sure you want to delete this item? This action cannot be undone.",
 }) {
+  const handleDelete = () => {
+    if (!isLoading) {
+      onDelete();
+    }
+  };
+
+  const handleClose = () => {
+    if (!isLoading) {
+      onHide();
+    }
+  };
   return (
-    <Modal show={show} onHide={onHide} size="md" centered>
-      <Modal.Header className="border-0" closeButton>
-        <Modal.Title>Confirm Delete</Modal.Title>
+    <Modal
+      show={show}
+      onHide={handleClose}
+      size="md"
+      centered
+      backdrop={isLoading ? "static" : true}
+      keyboard={!isLoading}
+      className="delete-confirmation-modal"
+    >
+      <Modal.Header className="border-0 pb-2">
+        <Modal.Title className="fw-bold text-dark d-flex align-items-center gap-2">
+          Confirm Delete
+        </Modal.Title>
+        {!isLoading && (
+          <button
+            type="button"
+            className="btn-close"
+            aria-label="Close"
+            onClick={handleClose}
+          />
+        )}
       </Modal.Header>
-      <Modal.Body>
-        <div className="d-flex flex-column align-items-center justify-items-center py-2">
-          <div className="">
+      <Modal.Body className="px-4 py-3">
+        <div className="d-flex flex-column align-items-center text-center">
+          <div className="mb-3">
             <img
               src={logo}
-              className="w-50  mx-auto d-block"
-              alt="confirmdelete"
+              className="img-fluid"
+              style={{
+                maxWidth: "80px",
+                height: "auto",
+                filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))",
+              }}
+              alt="Delete confirmation"
+              loading="lazy"
             />
           </div>
-          <h5 className="pt-3 text-center">Delete This Item?</h5>
-          <p className="text-muted w-75 px-3 text-center">
-            Are you sure you want to delete this item? If you are sure just
-            click on Confirm
+          <h5 className="fw-bold text-dark mb-3">{title}</h5>
+          <p className="text-muted mb-0 px-2" style={{ lineHeight: "1.5" }}>
+            {message}
           </p>
         </div>
       </Modal.Body>
-      <Modal.Footer className="border-0">
-        <Button variant="outline-dark" onClick={onHide}>
-          Close
-        </Button>
-        <Button
-          disabled={isLoading}
-          variant="outline-danger"
-          onClick={onDelete}
-        >
-          {isLoading ? (
-            <>
-              <FaSpinner /> Deleteing...
-            </>
-          ) : (
-            "Confirm"
-          )}
-        </Button>
+      <Modal.Footer className="border-0 pt-2 pb-3 px-4">
+        <div className="d-flex gap-2 w-100 justify-content-end">
+          <Button
+            variant="outline-secondary"
+            onClick={handleClose}
+            disabled={isLoading}
+            className="px-4"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleDelete}
+            disabled={isLoading}
+            className="px-4 d-flex align-items-center gap-2"
+            style={{ minWidth: "120px" }}
+          >
+            {isLoading ? (
+              <>
+                <FaSpinner
+                  className="spinner-border-sm"
+                  style={{ animation: "spin 1s linear infinite" }}
+                />
+                Deleting...
+              </>
+            ) : (
+              <>
+                <FaTrashAlt size={14} />
+                Delete
+              </>
+            )}
+          </Button>
+        </div>
       </Modal.Footer>
     </Modal>
   );
