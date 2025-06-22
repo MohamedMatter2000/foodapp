@@ -29,7 +29,6 @@ export default function Profile() {
   const { imageuser, setImageuser, getCurrentUser, currentUser } = useFoodApp();
   const [showpassword, setshowpassword] = useState(true);
   const navigate = useNavigate();
-
   function handleshowpass() {
     setshowpassword((prev) => !prev);
   }

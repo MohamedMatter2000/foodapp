@@ -9,14 +9,15 @@ import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
+import SubHeader from "../../../shared/SubHeader/SubHeader";
+import { useMoveBack } from "../../../hooks/useMoveBack";
 export default function Recipedata() {
+  const moveBack = useMoveBack();
   const [imagePreview, setImagePreview] = useState(null);
   const params = useParams();
   const recipeId = params.recipeId;
-  const navigate = useNavigate();
-  console.log(imagePreview);
   const handleToRecipe = () => {
-    navigate("/dashboard/recipes");
+    moveBack();
   };
   const {
     register,
@@ -25,22 +26,11 @@ export default function Recipedata() {
     setValue,
     reset,
   } = useForm();
-  console.log(isSubmitting);
-  const {
-    tagslist,
-    Allcategoryslistname,
-    getAllTags,
-    Allcategorysselected,
-    getAllRecipe,
-    currentPagerecipe,
-    SearchQueryRecipe,
-    TagSelected,
-    CategorySelected,
-  } = useFoodApp();
+  const { tagslist, categories, getAllTags, getAllCategories } = useFoodApp();
   function removeDuplicates(array) {
     const seen = new Set();
     return array
-      .map((item) => ({
+      ?.map((item) => ({
         ...item,
         name: item.name.replace(/\s+/g, ""),
       }))
@@ -52,7 +42,7 @@ export default function Recipedata() {
         return true;
       });
   }
-  let uniqueArray = removeDuplicates(Allcategoryslistname);
+  let uniqueArray = removeDuplicates(categories);
   const pathToFileObject = async (imagePath) => {
     try {
       const fullImageUrl = `${imageURL}${imagePath}`;
@@ -69,6 +59,7 @@ export default function Recipedata() {
     }
   };
   async function onsubmit(data) {
+    console.log(data);
     const formData = new FormData();
     for (let key in data) {
       if (key === "recipeImage") {
@@ -77,8 +68,6 @@ export default function Recipedata() {
         formData.append(key, data[key]);
       }
     }
-    console.log(data);
-    console.log(formData);
     try {
       if (recipeId) {
         const response = await PrivateaxiosInstances.put(
@@ -93,23 +82,16 @@ export default function Recipedata() {
         );
         toast.success(" Create Recipes  Succeclly");
       }
-      navigate("/dashboard/recipes");
+      moveBack();
       reset();
     } catch (errors) {
       toast.error(errors?.response?.data?.message);
     }
-    getAllRecipe(
-      10,
-      currentPagerecipe + 1,
-      SearchQueryRecipe,
-      TagSelected,
-      CategorySelected
-    );
   }
   useEffect(() => {
     (async () => {
       await getAllTags();
-      await Allcategorysselected();
+      await getAllCategories();
       if (recipeId !== "") {
         const getRecipe = async () => {
           const response = await PrivateaxiosInstances.get(
@@ -138,13 +120,13 @@ export default function Recipedata() {
 
   return (
     <div>
-      {/* <Minheader
+      <SubHeader
         title=" the Recipes !"
         discribtion="you can now fill the meals easily using the table and form , click here and sill it with the table !"
         btnName="back to  Recipes"
         recipes="true"
         handleBtnAction={handleToRecipe}
-      /> */}
+      />
       <form onSubmit={handleSubmit(onsubmit)} className="mt-5">
         <div className="input-group mb-3">
           <input
@@ -160,7 +142,6 @@ export default function Recipedata() {
             {errors.name.message}
           </span>
         )}
-        {/* Selected*/}
         <div className="selected-tags w-100 mb-3">
           <select
             {...register("tagId", { required: "Tag is required" })}
@@ -183,8 +164,6 @@ export default function Recipedata() {
             {errors.tagId.message}
           </span>
         )}
-        {/* Selected*/}
-        {/*Price*/}
         <div className="mb-3">
           <div className="input-group mb-3 ">
             <input
@@ -195,9 +174,6 @@ export default function Recipedata() {
               type="number"
               className="form-control bg-secondary-custom  border border-end-0 "
               placeholder="Recipe Price"
-              // onInput={(e) => {
-              //   e.target.value = e.target.value.replace(/[^0-9.]/g, "");
-              // }}
             />
             <div className="input-group-append">
               <span className="input-group-text border  rounded-start-0 rounded-end">
@@ -209,8 +185,6 @@ export default function Recipedata() {
             <div className="text-danger">{errors.price.message}</div>
           )}
         </div>
-        {/*Price*/}
-        {/*cate*/}
         <div className="selectedcategary mb-3">
           <select
             {...register("categoriesIds", {
@@ -233,8 +207,6 @@ export default function Recipedata() {
             <div className="text-danger">{errors.categoriesIds.message}</div>
           )}
         </div>
-        {/*cate*/}
-        {/*description*/}
         <div className="mb-3">
           <textarea
             {...register("description", {
@@ -247,8 +219,6 @@ export default function Recipedata() {
             <div className="text-danger">{errors.description.message}</div>
           )}
         </div>
-        {/*description*/}
-        {/*description*/}
         <label
           htmlFor="recipeImage"
           className="form-label file-image-input recipeImage dott py-3 bg-success w-100 bg-opacity-10 fw-semibold"
@@ -260,6 +230,7 @@ export default function Recipedata() {
               type="file"
               className="form-control d-none"
               id="recipeImage"
+              accept="image/*"
             />
             <p>
               <>
@@ -272,11 +243,10 @@ export default function Recipedata() {
         {errors.recipeImage && (
           <div className="text-danger">{errors.recipeImage.message}</div>
         )}
-        {/*description*/}
         <div className="mt-5 d-flex justify-content-end gap-3 flex-sm-column flex-md-row">
           <button
             type="button"
-            onClick={() => navigate("/dashboard/recipes")}
+            onClick={() => moveBack()}
             className="btn btn-outline-success px-5 py-2"
           >
             Cancel
@@ -293,11 +263,3 @@ export default function Recipedata() {
     </div>
   );
 }
-
-// const handleImageChange = (e) => {
-//   const file = e.target.files[0];
-//   if (file) {
-//     setValue("recipeImage", file.name);
-//     setImagePreview(file);
-//   }
-// };

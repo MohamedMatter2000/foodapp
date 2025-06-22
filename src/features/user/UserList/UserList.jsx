@@ -33,7 +33,7 @@ export default function UserList() {
     searchemail: "",
     selectrole: "",
   });
-  const viewuser = users?.filter((item) => item?.id === usersId);
+  const viewuser = users?.filter((item) => item?.id === usersId)[0];
   async function getUsers(pageSize, pageNumber, userName, email, groups) {
     setIsLoading(true);
     try {
@@ -199,10 +199,10 @@ export default function UserList() {
       />
       {isOpen("ViewUser") && (
         <ViewUser
-          data={viewuser[0]}
+          data={viewuser}
           show={isOpen("ViewUser")}
           onHide={closeModal}
-          key={viewuser}
+          key={viewuser?.id}
         />
       )}
       {isOpen("DeleteUser") && (
