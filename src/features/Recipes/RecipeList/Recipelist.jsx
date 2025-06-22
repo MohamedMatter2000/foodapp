@@ -1,70 +1,106 @@
 /* eslint-disable no-unused-vars */
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../../../shared/Header/Header";
 import Minheader from "../../../shared/SubHeader/SubHeader";
 import logo from "../../../assets/images/recipe-img.png";
-import { MdDelete, MdOutlineEditCalendar, MdViewList } from "react-icons/md";
-import { BsThreeDots } from "react-icons/bs";
-import NotData from "../../../shared/NoDate/NotData";
 import DeletConfirmation from "../../../shared/DeleteConfirmation/DeleteConfirmation";
-import { imageURL } from "../../../services/Api/APiconfig";
+import { imageURL, RECEIPE_URL } from "../../../services/Api/APiconfig";
 import { useFoodApp } from "../../../context/AppFoodProvider";
-import Spinner from "../../../shared/NoDate/Spinner";
 import Noimg from "../../../assets/images/nodata.png";
 import Paginations from "../../../shared/pagination/Pagination";
 import { CiSearch } from "react-icons/ci";
-import { useState } from "react";
-import RecipeView from "../RecipeDate/RecipeView";
+import { useEffect, useState } from "react";
+import RecipeView from "../RecipeView/RecipeView";
+import ActionTable from "../../../shared/ActionTable/ActionTable";
+import Table from "../../../shared/ReusableTable/Table";
+import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
+import usePagination from "../../../hooks/usePagination";
+import useModal from "../../../hooks/useModal";
+import { toast } from "react-toastify";
 export default function Recipelist() {
-  const [popview, setpopview] = useState(false);
-  const [currentrecipe, setcurrentrecipe] = useState();
-  const closepopview = () => {
-    setpopview(!popview);
-  };
+  const [recipesylist, setrecipeslist] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [recipeId, setrecipeId] = useState("");
   const {
-    closePopup,
-    isPopupVisible,
-    isLoading,
-    setChooseDelete,
-    recipesylist,
-    setrecipeId,
-    TotalofPagesRecipe,
-    ShowPrevButtonrecipe,
-    ShowNextButtonrecipe,
-    setcurrentPagerecipe,
-    tagslist,
-    Allcategoryslistname,
-    setTagSelected,
-    setSearchQueryRecipe,
-    setCategorySelected,
-    usergroup,
-  } = useFoodApp();
+    TotalofPages,
+    getTotalofPages,
+    currentPage,
+    setcurrentPage,
+    ShowNextButton,
+    ShowPrevButton,
+  } = usePagination();
+  const { isOpen, closeModal, openModal } = useModal();
+  const { tagslist, categories, usergroup } = useFoodApp();
+  const viewrecipe = recipesylist?.filter((item) => item?.id === recipeId)[0];
+  const [filterrecipe, setfilterrecipe] = useState({
+    TagSelected: "",
+    searchname: "",
+    SelectedCategory: "",
+  });
   const navigate = useNavigate();
-  function handleSearchBar(e) {
-    setSearchQueryRecipe(e.target.value);
+  async function getAllRecipe(pageSize, pageNumber, tagId, name, categoryId) {
+    setIsLoading(true);
+    try {
+      const response = await PrivateaxiosInstances.get(RECEIPE_URL.GET_RECIPE, {
+        params: {
+          pageSize: pageSize,
+          pageNumber: pageNumber,
+          name: name,
+          tagId: tagId,
+          categoryId: categoryId,
+        },
+      });
+      setrecipeslist(response?.data?.data);
+      getTotalofPages(response?.data?.totalNumberOfPages);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  useEffect(() => {
+    getAllRecipe(
+      10,
+      currentPage + 1,
+      filterrecipe.TagSelected,
+      filterrecipe.searchname,
+      filterrecipe.SelectedCategory
+    );
+  }, [
+    currentPage,
+    filterrecipe.TagSelected,
+    filterrecipe.searchname,
+    filterrecipe.SelectedCategory,
+  ]);
+  function handleSearchName(e) {
+    setfilterrecipe({
+      ...filterrecipe,
+      searchname: e.target.value,
+    });
   }
   function handleSelectedTag(e) {
-    setTagSelected(e.target.value);
+    setfilterrecipe({
+      ...filterrecipe,
+      TagSelected: e.target.value,
+    });
   }
-  function handleSelectCategory(e) {
-    setCategorySelected(e.target.value);
+  function handleSelectedCategory(e) {
+    setfilterrecipe({
+      ...filterrecipe,
+      SelectedCategory: e.target.value,
+    });
   }
-  const handleViewRecipe = (recipe) => {
-    setcurrentrecipe(recipe);
-    setpopview(true);
-  };
-  const handleDeleteRecipe = (id) => {
+  function handleViewRecipe(id) {
     setrecipeId(id);
-    closePopup();
-    setChooseDelete("recipe");
-  };
+    openModal("ViewRecipe");
+  }
   const handleAddRecipe = () => {
     navigate("/dashboard/recipes/new-recipe");
   };
   function removeDuplicates(array) {
     const seen = new Set();
     return array
-      .map((item) => ({
+      ?.map((item) => ({
         ...item,
         name: item.name.replace(/\s+/g, ""),
       }))
@@ -76,11 +112,82 @@ export default function Recipelist() {
         return true;
       });
   }
-  let uniqueArray = removeDuplicates(Allcategoryslistname);
-  console.log(uniqueArray);
+  async function handleDeletRecipe(id) {
+    setIsLoading(true);
+    try {
+      const response = await PrivateaxiosInstances.delete(
+        RECEIPE_URL.DELETE_RECIPE(id)
+      );
+      toast.success("Delete Recipe Succeclly");
+      getAllRecipe();
+    } catch (error) {
+      toast.error("Delete Recipe failed");
+    } finally {
+      setIsLoading(false);
+      closeModal();
+    }
+  }
+  function handleViewDelete(id) {
+    setrecipeId(id);
+    openModal("DeleteRecipe");
+  }
+  function handleEditRecipe(id) {
+    navigate(`/dashboard/recipes/${id}`);
+  }
+  const columns = [
+    {
+      key: "id",
+      title: "Id",
+      render: (row) => row?.id,
+    },
+    { key: "Name", title: "Name", render: (row) => row?.name },
+    {
+      key: "Imges",
+      title: "Imges",
+      render: (row) => (
+        <img
+          className="images"
+          src={row?.imagePath ? `${imageURL}${row.imagePath}` : Noimg}
+        />
+      ),
+    },
+    { key: "price", title: "price", render: (row) => row?.price },
+    {
+      key: "Description",
+      title: "Description",
+      render: (row) => row?.description,
+    },
+    { key: "Tags", title: "Tags", render: (row) => row?.tag?.name },
+    {
+      key: "category",
+      title: "category",
+      render: (row) => row?.category[0]?.name,
+    },
+    {
+      key: "creationDate",
+      title: "Create at",
+      dateField: true,
+      render: (row) => {
+        return new Date(row?.creationDate).toLocaleString();
+      },
+    },
+    {
+      key: "action",
+      title: "Action",
+      render: (row) => (
+        <ActionTable
+          data={row}
+          onView={handleViewRecipe}
+          onDelete={handleViewDelete}
+          onEdit={handleEditRecipe}
+        />
+      ),
+    },
+  ];
+  let uniqueArray = removeDuplicates(categories);
   return (
     <div>
-      {usergroup !== "SystemUser" ? (
+      {usergroup !== "SystemUser" && (
         <>
           <Header
             title="Recipe Itmes!"
@@ -94,36 +201,26 @@ export default function Recipelist() {
             handleBtnAction={handleAddRecipe}
           />
         </>
-      ) : (
-        ""
       )}
       <div className="Total-search-tag-cate d-flex flex-column flex-lg-row gap-3  my-3">
-        <div
-          className="search   w-100 d-flex justify-content-between align-items-center"
-          style={{ marginLeft: "-20px" }}
-        >
-          <div
-            className=" position-relative fs-5 "
-            style={{ left: "40px", marginTop: "-4px" }}
-          >
-            <CiSearch />
+        <div className="search-input-wrapper position-relative w-100">
+          <div className="search-icon position-absolute top-50 translate-middle-y ms-3">
+            <CiSearch className="fs-5 text-muted" />
           </div>
           <input
             type="search"
-            placeholder="Search"
-            className="w-100  px-5 py-2 rounded-3  border-1 border"
-            onChange={handleSearchBar}
+            placeholder="Search by name"
+            className="form-control ps-5 py-2 rounded-3 border"
+            onChange={handleSearchName}
           />
         </div>
-        <div className="selected-tags w-100">
+        <div className="w-100">
           <select
             className="form-select"
             aria-label="Default select example"
             onChange={handleSelectedTag}
           >
-            <option selected value=" ">
-              Tags
-            </option>
+            <option selected>Tags</option>
             {tagslist &&
               tagslist?.map((tag) => (
                 <option key={tag.id} value={tag.id}>
@@ -136,11 +233,9 @@ export default function Recipelist() {
           <select
             className="form-select"
             aria-label="Default select example"
-            onChange={handleSelectCategory}
+            onChange={handleSelectedCategory}
           >
-            <option selected value=" ">
-              Category
-            </option>
+            <option selected>Category</option>
             {uniqueArray &&
               uniqueArray.map((category) => (
                 <option key={category.id} value={category.id}>
@@ -150,142 +245,36 @@ export default function Recipelist() {
           </select>
         </div>
       </div>
-      <div className="table-responsive">
-        <table className="table  table-borderless">
-          <thead className=" table-light">
-            <tr>
-              <th scope="col" className="px-4 py-4 rounded-start-3 text-nowrap">
-                Id
-              </th>
-              <th scope="col" className="px-4 py-4">
-                Item Name
-              </th>
-              <th scope="col" className="px-4 py-4">
-                Imges
-              </th>
-              <th scope="col" className="px-4 py-4">
-                price
-              </th>
-              <th scope="col" className="px-4 py-4">
-                Description
-              </th>
-              <th scope="col" className="px-4 py-4">
-                Tags
-              </th>
-              <th scope="col" className="px-4 py-4 ">
-                category
-              </th>
-              <th scope="col" className="px-4 py-4 ">
-                Created At
-              </th>
-              <th scope="col" className="px-4 py-4 ">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {recipesylist.length > 0 ? (
-              recipesylist.map((recipe) => (
-                <tr key={recipe?.id}>
-                  <td data-label="Item Name" className="px-4 py-4 ">
-                    {recipe?.id}
-                  </td>
-                  <td data-label="name" className="px-4 py-4 ">
-                    {recipe?.name}
-                  </td>
-                  <td data-label="name" className="px-4 py-4 ">
-                    <img
-                      className="images"
-                      src={` ${
-                        recipe?.imagePath ? imageURL + recipe?.imagePath : Noimg
-                      }`}
-                    />
-                  </td>
-                  <td data-label="name" className="px-4 py-4 ">
-                    {recipe?.price}
-                  </td>
-                  <td data-label="name" className="px-4 py-4 ">
-                    {recipe?.description}
-                  </td>
-                  <td data-label="name" className="px-4 py-4 ">
-                    {recipe?.tag?.name}
-                  </td>
-                  <td data-label="name" className="px-4 py-4 ">
-                    {recipe?.category[0]?.name ?? "none"}
-                  </td>
-                  <td data-label="Description" className="px-4 py-4 text-wrap">
-                    {new Date(recipe?.creationDate).toLocaleString()}
-                  </td>
-                  <td
-                    data-label="Action"
-                    className="dropup-center dropup  px-4 py-4"
-                  >
-                    <BsThreeDots
-                      className="fa fa-ellipsis  dropup-center dropup fs-5 "
-                      data-bs-toggle="dropdown"
-                    />
-                    <ul
-                      className={`${
-                        usergroup === "SystemUser" ? "ViewUser" : ""
-                      } dropdown-menu  recipes border-none w-100  z-3 position-absolute mt-2 rounded-2`}
-                    >
-                      {usergroup === "SystemUser" ? (
-                        <li onClick={() => handleViewRecipe(recipe)}>
-                          <a
-                            className="dropdown-item d-flex  align-items-center gap-2"
-                            href="#"
-                          >
-                            <MdViewList className="text-success fs-4" /> View
-                          </a>
-                        </li>
-                      ) : (
-                        <>
-                          <Link
-                            to={`/dashboard/recipes/${recipe.id}`}
-                            className="dropdown-item d-flex  align-items-center gap-2"
-                          >
-                            <MdOutlineEditCalendar className="text-success fs-4" />
-                            Edit
-                          </Link>
-                          <li onClick={() => handleDeleteRecipe(recipe?.id)}>
-                            <a className="dropdown-item d-flex  align-items-center gap-2">
-                              <MdDelete
-                                className="text-success fs-4"
-                                data-toggle="modal"
-                                data-target="#exampleModal"
-                              />
-                              Delete
-                            </a>
-                          </li>
-                        </>
-                      )}
-                    </ul>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td className="text-center" colSpan={9}>
-                  {isLoading ? <Spinner /> : <NotData />}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {recipesylist.length > 0 ? (
+      <Table
+        columns={columns}
+        data={recipesylist}
+        isLoading={isLoading}
+        message={"No Recipe Available"}
+      />
+      {recipesylist.length > 0 && (
         <Paginations
-          TotalofPages={TotalofPagesRecipe}
-          setcurrentPage={setcurrentPagerecipe}
-          ShowNextButton={ShowNextButtonrecipe}
-          ShowPrevButton={ShowPrevButtonrecipe}
+          TotalofPages={TotalofPages}
+          setcurrentPage={setcurrentPage}
+          ShowNextButton={ShowNextButton}
+          ShowPrevButton={ShowPrevButton}
         />
-      ) : null}
-      {popview && (
-        <RecipeView recipe={currentrecipe} closePopup={closepopview} />
       )}
-      {isPopupVisible && <DeletConfirmation />}
+      {isOpen("DeleteRecipe") && (
+        <DeletConfirmation
+          show={isOpen("DeleteRecipe")}
+          onHide={closeModal}
+          onDelete={() => handleDeletRecipe(recipeId)}
+          isLoading={isLoading}
+        />
+      )}
+      {isOpen("ViewRecipe") && (
+        <RecipeView
+          Recipe={viewrecipe}
+          show={isOpen("ViewRecipe")}
+          onHide={closeModal}
+          key={viewrecipe?.id}
+        />
+      )}
     </div>
   );
 }

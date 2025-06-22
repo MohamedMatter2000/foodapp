@@ -1,63 +1,42 @@
 import DeletConfirmation from "../../../shared/DeleteConfirmation/DeleteConfirmation";
 import Header from "../../../shared/Header/Header";
 import logo from "../../../assets/images/recipe-img.png";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Paginations from "../../../shared/pagination/Pagination";
 import { CiSearch } from "react-icons/ci";
 import Categoriesdata from "../categoriesData/Categoriesdata";
 import SubHeader from "../../../shared/SubHeader/SubHeader";
-import usePagination from "../../../hooks/usePagination";
 import useModal from "../../../hooks/useModal";
 import Table from "../../../shared/ReusableTable/Table";
 import ActionTable from "../../../shared/ActionTable/ActionTable";
 import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
 import { CATEGORY_URL } from "../../../services/Api/APiconfig";
 import { toast } from "react-toastify";
+import { useFoodApp } from "../../../context/AppFoodProvider";
 export default function Categorieslist() {
   const {
+    searchName,
+    setSearchName,
+    categories,
+    refreshCategories,
     TotalofPages,
-    getTotalofPages,
-    currentPage,
     setcurrentPage,
     ShowNextButton,
     ShowPrevButton,
-  } = usePagination();
+  } = useFoodApp();
   const { isOpen, closeModal, openModal } = useModal();
-  const [categories, setcategories] = useState([]);
   const [categoryId, setcategoryId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [searchname, setsearchname] = useState("");
   const currentCategory = categories?.filter(
     (item) => item?.id === categoryId
   )[0];
-  async function getAllCategries(pageSize, pageNumber, name) {
-    setIsLoading(true);
-    try {
-      const response = await PrivateaxiosInstances.get(
-        CATEGORY_URL.GET_CATOGERY,
-        {
-          params: {
-            pageSize: pageSize,
-            pageNumber: pageNumber,
-            name: name,
-          },
-        }
-      );
-      setcategories(response.data.data);
-      getTotalofPages(response?.data?.totalNumberOfPages);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
   const handleDeleteCategory = async () => {
     setIsLoading(true);
     try {
       await PrivateaxiosInstances.delete(
         CATEGORY_URL.DELETE_CATOGERY(categoryId)
       );
-      getAllCategries(6, currentPage + 1);
+      refreshCategories();
       toast.success("Category was removed successfully");
     } catch (error) {
       toast.error("Failed to remove Category");
@@ -66,8 +45,32 @@ export default function Categorieslist() {
       closeModal();
     }
   };
+  // async function getAllCategries(pageSize, pageNumber, name) {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await PrivateaxiosInstances.get(
+  //       CATEGORY_URL.GET_CATOGERY,
+  //       {
+  //         params: {
+  //           pageSize: pageSize,
+  //           pageNumber: pageNumber,
+  //           name: name,
+  //         },
+  //       }
+  //     );
+  //     setcategories(response.data.data);
+  //     getTotalofPages(response?.data?.totalNumberOfPages);
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }
+  // useEffect(() => {
+  //   getAllCategries(6, currentPage + 1, searchname);
+  // }, [currentPage, searchname]);
   const handleSearchName = (e) => {
-    setsearchname(e.target.value);
+    setSearchName(e.target.value);
   };
   const handleViewDelete = (id) => {
     setcategoryId(id);
@@ -81,9 +84,6 @@ export default function Categorieslist() {
     setcategoryId(id);
     openModal("AddCategory");
   }
-  useEffect(() => {
-    getAllCategries(6, currentPage + 1, searchname);
-  }, [currentPage, searchname]);
   const columns = [
     {
       key: "id",
@@ -105,8 +105,8 @@ export default function Categorieslist() {
       render: (row) => (
         <ActionTable
           data={row}
-          showEdit={true}
           showView={false}
+          showEdit={true}
           onDelete={handleViewDelete}
           onEdit={handleViewEdit}
         />
@@ -132,6 +132,7 @@ export default function Categorieslist() {
         </div>
         <input
           type="search"
+          value={searchName}
           placeholder="Search by name"
           className="form-control ps-5 py-2 rounded-3 border"
           onChange={handleSearchName}
@@ -147,9 +148,7 @@ export default function Categorieslist() {
         <Categoriesdata
           closeAdd={closeModal}
           currentCategory={currentCategory}
-          refreshCategories={() =>
-            getAllCategries(6, currentPage + 1, searchname)
-          }
+          refreshCategories={() => refreshCategories()}
         />
       )}
       {isOpen("DeleteCategory") && (
