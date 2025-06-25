@@ -1,14 +1,13 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
-import { axiosInstances } from "../../../services/Api/ApInstance";
-import { USER_URLS } from "../../../services/Api/APiconfig";
 import TitleAuth from "../../../shared/AuthForm/TitleAuth";
 import { FormProvider, useForm } from "react-hook-form";
 import ReusableForm from "../../../shared/AuthForm/ReusableForm";
 import { FormInput } from "../../../shared/AuthForm/FormInput";
 import ButtonForm from "../../../shared/AuthForm/ButtonForm";
 import { getValidationRules } from "../../../hooks/usevalidations";
+import { useResetPassword } from "../../../services/apiAuth";
 export default function ResetPassword() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -29,15 +28,17 @@ export default function ResetPassword() {
     }
   }, [confirmNewPassword, trigger, NewPassword]);
   const { email, password, confirmPassword, OTP } = getValidationRules(watch);
-
-  async function onSubmit(data) {
-    try {
-      await axiosInstances.post(USER_URLS.RESET_PASSWORD, data);
-      toast.success("Reset Password Successfully");
-      navigate("/Login");
-    } catch (errors) {
-      toast.error(errors.response.data.message);
-    }
+  const { mutate: ResetPassword, isPending } = useResetPassword();
+  function onSubmit(data) {
+    ResetPassword(data, {
+      onSuccess: () => {
+        toast.success("Reset Password Successfully");
+        navigate("/Login");
+      },
+      onError: (error) => {
+        toast.error(error.response.data.message);
+      },
+    });
   }
   return (
     <>
@@ -67,9 +68,7 @@ export default function ResetPassword() {
             placeholder="Confirm New Password"
             type="password"
           />
-          <ButtonForm isSubmitting={methods.formState.isSubmitting}>
-            Submit
-          </ButtonForm>
+          <ButtonForm isSubmitting={isPending}>Submit</ButtonForm>
         </ReusableForm>
       </FormProvider>
     </>

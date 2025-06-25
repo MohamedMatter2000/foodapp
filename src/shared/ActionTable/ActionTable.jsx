@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { BsThreeDots } from "react-icons/bs";
 import { MdDelete, MdOutlineEditCalendar, MdViewList } from "react-icons/md";
-import { useLocation } from "react-router";
 export default function ActionTable({
   data,
   showView = true,
@@ -10,8 +9,6 @@ export default function ActionTable({
   onDelete,
   onEdit,
 }) {
-  const location = useLocation();
-  console.log(location.pathname);
   return (
     <div className="dropdown">
       <span

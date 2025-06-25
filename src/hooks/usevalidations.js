@@ -63,4 +63,19 @@ export const getValidationRules = (watch) => ({
       message: "Country name must be at least 2 characters long",
     },
   },
+  CategoryName: {
+    required: getRequiredMessage("CategoryName"),
+    minLength: {
+      value: 2,
+      message: "Category name must be at least 2 characters",
+    },
+    maxLength: {
+      value: 50,
+      message: "Category name must not exceed 50 characters",
+    },
+    pattern: {
+      value: /^[a-zA-Z\s\u0600-\u06FF]+$/,
+      message: "Category name should only contain letters and spaces",
+    },
+  },
 });

@@ -1,18 +1,27 @@
 /* eslint-disable no-unused-vars */
 // import Minheader from "../../../shared/Min-header/Minheader";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useFoodApp } from "../../../context/AppFoodProvider";
 import { FaArrowUpFromBracket } from "react-icons/fa6";
-import { imageURL, RECEIPE_URL } from "../../../services/Api/APiconfig";
-import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { FaSpinner } from "react-icons/fa";
 import SubHeader from "../../../shared/SubHeader/SubHeader";
 import { useMoveBack } from "../../../hooks/useMoveBack";
+import { useCategories } from "../../../services/apiCategory";
+import {
+  useAddRecipe,
+  useRecipeById,
+  useUpdateRecipe,
+} from "../../../services/apiRecipe";
+import { pathToFileObject, removeDuplicates } from "../../../utils/helpers";
+import Spinner from "../../../shared/NoDate/Spinner";
+import FormInput from "../../../shared/FormInput/FormInput";
+import ButtonFormInput from "../../../shared/FormInput/ButtonFormInput";
+import { imageURL } from "../../../services/aPiConfig";
+import { useFoodApp } from "../../../context/AppFoodProvider";
 export default function Recipedata() {
   const moveBack = useMoveBack();
+  const { tagsData } = useFoodApp();
   const [imagePreview, setImagePreview] = useState(null);
   const params = useParams();
   const recipeId = params.recipeId;
@@ -21,103 +30,93 @@ export default function Recipedata() {
   };
   const {
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     handleSubmit,
     setValue,
+    watch,
     reset,
   } = useForm();
-  const { tagslist, categories, getAllTags, getAllCategories } = useFoodApp();
-  function removeDuplicates(array) {
-    const seen = new Set();
-    return array
-      ?.map((item) => ({
-        ...item,
-        name: item.name.replace(/\s+/g, ""),
-      }))
-      .filter((item) => {
-        if (seen.has(item.name)) {
-          return false;
-        }
-        seen.add(item.name);
-        return true;
-      });
-  }
-  let uniqueArray = removeDuplicates(categories);
-  const pathToFileObject = async (imagePath) => {
-    try {
-      const fullImageUrl = `${imageURL}${imagePath}`;
-      setImagePreview(fullImageUrl);
-      const response = await fetch(fullImageUrl);
-      if (!response.ok) throw new Error("Failed to fetch image");
-      const blob = await response.blob();
-      const fileName = imagePath.split("/").pop();
-      const file = new File([blob], fileName, { type: blob.type });
-      return file;
-    } catch (error) {
-      console.error("Error converting path to File object:", error);
-      return null;
-    }
-  };
+  const watchedImage = watch("recipeImage");
+  const { totalNumberOfRecords } = useCategories();
+  const total = totalNumberOfRecords;
+  const { Categories } = useCategories(
+    {
+      pageSize: total,
+    },
+    { enabled: !!total }
+  );
+  const { mutateAsync: addRecipe, isPending: isAdding } = useAddRecipe();
+  const { mutateAsync: updateRecipe, isPending: isUpdating } =
+    useUpdateRecipe();
+  let uniqueArray = removeDuplicates(Categories);
+  const isLoading = isAdding || isUpdating;
+  const {
+    data: recipeResponse,
+    isLoading: isLoadingRecipe,
+    isSuccess,
+  } = useRecipeById(recipeId);
   async function onsubmit(data) {
-    console.log(data);
     const formData = new FormData();
     for (let key in data) {
       if (key === "recipeImage") {
-        formData.append(key, data?.[key]?.[0]);
+        if (data?.[key]?.[0] instanceof File) {
+          formData.append(key, data?.[key]?.[0]);
+        }
       } else {
         formData.append(key, data[key]);
       }
     }
+    console.log(formData);
     try {
       if (recipeId) {
-        const response = await PrivateaxiosInstances.put(
-          RECEIPE_URL.UPDATE_RECIPE(recipeId),
-          formData
-        );
-        toast.success(" Edit Recipes  Succeclly");
+        await updateRecipe({ recipeId, formData });
+        toast.success("Recipe updated successfully!");
       } else {
-        const response = await PrivateaxiosInstances.post(
-          RECEIPE_URL.ADD_RECIPE,
-          formData
-        );
-        toast.success(" Create Recipes  Succeclly");
+        await addRecipe(formData);
+        toast.success("Recipe created successfully!");
       }
+    } catch (errors) {
+      toast.error(
+        errors?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
       moveBack();
       reset();
-    } catch (errors) {
-      toast.error(errors?.response?.data?.message);
     }
   }
   useEffect(() => {
-    (async () => {
-      await getAllTags();
-      await getAllCategories();
-      if (recipeId !== "") {
-        const getRecipe = async () => {
-          const response = await PrivateaxiosInstances.get(
-            RECEIPE_URL.GET_RECIPE_BY_ID(recipeId)
+    if (
+      watchedImage &&
+      watchedImage.length > 0 &&
+      watchedImage[0] instanceof File
+    ) {
+      const newPreviewUrl = URL.createObjectURL(watchedImage[0]);
+      setImagePreview(newPreviewUrl);
+      return () => URL.revokeObjectURL(newPreviewUrl);
+    } else if (isSuccess && recipeResponse) {
+      setValue("name", recipeResponse.name);
+      setValue("description", recipeResponse.description);
+      setValue("tagId", recipeResponse.tag?.id);
+      setValue("categoriesIds", recipeResponse.category?.[0]?.id);
+      setValue("price", recipeResponse.price);
+      if (recipeResponse.imagePath) {
+        setImagePreview(`${imageURL}${recipeResponse.imagePath}`);
+        const setInitialImageFile = async () => {
+          const file = await pathToFileObject(
+            recipeResponse.imagePath,
+            setImagePreview
           );
-          const recipe = response?.data;
-          console.log(recipe);
-          setValue("name", recipe?.name);
-          setValue("description", recipe?.description);
-          setValue("tagId", recipe?.tag?.id);
-          setValue("categoriesIds", recipe?.category[0]?.id);
-          setValue("price", recipe?.price);
-          if (recipe?.imagePath) {
-            const file = await pathToFileObject(recipe?.imagePath);
-            if (file) {
-              setValue("recipeImage", [file]);
-            }
+          if (file) {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            const fileList = dataTransfer.files;
+            setValue("recipeImage", fileList);
           }
         };
-        if (recipeId) {
-          getRecipe();
-        }
+        setInitialImageFile();
       }
-    })();
-  }, [recipeId, setValue]);
-
+    }
+  }, [isSuccess, recipeResponse, setValue, watchedImage]);
   return (
     <div>
       <SubHeader
@@ -127,139 +126,115 @@ export default function Recipedata() {
         recipes="true"
         handleBtnAction={handleToRecipe}
       />
-      <form onSubmit={handleSubmit(onsubmit)} className="mt-5">
-        <div className="input-group mb-3">
-          <input
-            type="text"
-            className="form-control"
+      {isLoadingRecipe ? (
+        <div className="text-center mt-5">
+          <Spinner />
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit(onsubmit)} className="mt-5">
+          <FormInput
+            name="name"
+            rules={{ required: "Recipe Name is required" }}
+            register={register}
             placeholder="Recipe Name"
-            aria-describedby="basic-addon1"
-            {...register("name", { required: "Name is required" })}
+            error={errors.name}
+            isSubmitting={isLoading}
           />
-        </div>
-        {errors.name && (
-          <span className="text-da text-danger font-900">
-            {errors.name.message}
-          </span>
-        )}
-        <div className="selected-tags w-100 mb-3">
-          <select
-            {...register("tagId", { required: "Tag is required" })}
-            className="form-select"
-            aria-label="Default select example"
-          >
-            <option selected value=" ">
-              Tags
-            </option>
-            {tagslist &&
-              tagslist?.map((tag) => (
-                <option key={tag.id} value={tag.id}>
-                  {tag.name}
-                </option>
-              ))}
-          </select>
-        </div>
-        {errors.tagId && (
-          <span className="text-da text-danger font-900">
-            {errors.tagId.message}
-          </span>
-        )}
-        <div className="mb-3">
-          <div className="input-group mb-3 ">
-            <input
-              {...register("price", {
-                required: "Price is required",
-                min: { value: 0, message: "Must be positive price" },
-              })}
-              type="number"
-              className="form-control bg-secondary-custom  border border-end-0 "
-              placeholder="Recipe Price"
-            />
-            <div className="input-group-append">
-              <span className="input-group-text border  rounded-start-0 rounded-end">
-                EGP
-              </span>
-            </div>
-          </div>
-          {errors.price && (
-            <div className="text-danger">{errors.price.message}</div>
-          )}
-        </div>
-        <div className="selectedcategary mb-3">
-          <select
-            {...register("categoriesIds", {
-              required: "categories is required",
-            })}
-            className="form-select"
-            aria-label="Default select example"
-          >
-            <option selected value="">
-              Category
-            </option>
-            {uniqueArray &&
-              uniqueArray.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-          </select>
-          {errors.categoriesIds && (
-            <div className="text-danger">{errors.categoriesIds.message}</div>
-          )}
-        </div>
-        <div className="mb-3">
-          <textarea
-            {...register("description", {
-              required: "Description is required",
-            })}
-            className="form-control textarea-resize bg-secondary-custom"
+          <FormInput
+            name="tagId"
+            type="select"
+            rules={{ required: "Tag is required" }}
+            register={register}
+            placeholder="Tags"
+            option={tagsData}
+            error={errors.tagId}
+            isSubmitting={isLoading}
+          />
+          <FormInput
+            name="price"
+            type="number"
+            rules={{
+              required: "Recipe Price is required",
+              min: { value: 0, message: "Must be positive price" },
+            }}
+            register={register}
+            placeholder="Recipe Price"
+            error={errors.price}
+            isSubmitting={isLoading}
+          />
+          <FormInput
+            name="categoriesIds"
+            type="select"
+            rules={{ required: "Categories is required" }}
+            register={register}
+            placeholder="Category"
+            option={uniqueArray}
+            error={errors.categoriesIds}
+            isSubmitting={isLoading}
+          />
+          <FormInput
+            name="description"
+            rules={{ required: "Description is required" }}
+            register={register}
             placeholder="Description"
+            error={errors.description}
+            isSubmitting={isLoading}
           />
-          {errors.description && (
-            <div className="text-danger">{errors.description.message}</div>
-          )}
-        </div>
-        <label
-          htmlFor="recipeImage"
-          className="form-label file-image-input recipeImage dott py-3 bg-success w-100 bg-opacity-10 fw-semibold"
-        >
-          <div className="d-flex align-items-center justify-content-center flex-column w-100">
-            <FaArrowUpFromBracket />
+          <label
+            htmlFor="recipeImage"
+            className="form-label file-image-input recipeImage dott py-3 bg-success w-100 bg-opacity-10 fw-semibold"
+            style={{ cursor: "pointer" }}
+          >
             <input
-              {...register("recipeImage")}
+              {...register("recipeImage", {
+                validate: (value) => {
+                  if (!recipeId && (!value || value.length === 0)) {
+                    return "Recipe image is required";
+                  }
+                  return true;
+                },
+              })}
               type="file"
               className="form-control d-none"
               id="recipeImage"
               accept="image/*"
             />
-            <p>
-              <>
-                Drag & Drop or
-                <span className="text-success">Choose an Image</span> to Upload
-              </>
-            </p>
-          </div>
-        </label>
-        {errors.recipeImage && (
-          <div className="text-danger">{errors.recipeImage.message}</div>
-        )}
-        <div className="mt-5 d-flex justify-content-end gap-3 flex-sm-column flex-md-row">
-          <button
-            type="button"
-            onClick={() => moveBack()}
-            className="btn btn-outline-success px-5 py-2"
-          >
-            Cancel
-          </button>
-          <button
-            disabled={isSubmitting}
-            type="submit"
-            className="btn btn-success w-full fw-semibold px-5 py-2"
-          >
-            {isSubmitting ? <FaSpinner /> : recipeId ? "Edit" : "Create"}
-          </button>
-        </div>
-      </form>
+            {imagePreview ? (
+              <div className="text-center">
+                <img
+                  src={imagePreview}
+                  alt="Recipe Preview"
+                  className="img-fluid rounded"
+                  style={{ maxHeight: "250px", objectFit: "cover" }}
+                />
+                <p className="mt-2 mb-0 text-success">
+                  Click to change the image
+                </p>
+              </div>
+            ) : (
+              <div className="d-flex align-items-center justify-content-center flex-column w-100">
+                <FaArrowUpFromBracket />
+                <p className="mb-0">
+                  Drag & Drop or
+                  <span className="text-success"> Choose an Image </span> to
+                  Upload
+                </p>
+              </div>
+            )}
+          </label>
+          {errors.recipeImage && (
+            <div className="text-danger">{errors.recipeImage.message}</div>
+          )}
+          <img />
+          <ButtonFormInput
+            classNameContainerButton="my-3 d-flex justify-content-end gap-3 flex-sm-column flex-md-row"
+            isEditMode={recipeId}
+            cancel={() => moveBack()}
+            isLoading={isLoading}
+            classNameButton="px-5 py-2"
+          />
+        </form>
+      )}
     </div>
   );
 }

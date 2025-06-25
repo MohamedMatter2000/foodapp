@@ -18,8 +18,16 @@ import Categorieslist from "./features/Catagories/categoriesList/Categorieslist"
 import Favorites from "./features/Favorite/Favorites";
 import Profile from "./features/Profile/Profile";
 import Dashboard from "./features/Dashboard/Dashboard";
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 function App() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000,
+        // staleTime: 0,
+      },
+    },
+  });
   const router = createBrowserRouter([
     {
       path: "/",
@@ -56,22 +64,24 @@ function App() {
   ]);
   return (
     <>
-      <AppFoodProvider>
-        <RouterProvider router={router} />
-        <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick={false}
-          rtl
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-          transition={Bounce}
-        />
-      </AppFoodProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppFoodProvider>
+          <RouterProvider router={router} />
+          <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick={false}
+            rtl
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+            transition={Bounce}
+          />
+        </AppFoodProvider>
+      </QueryClientProvider>
     </>
   );
 }

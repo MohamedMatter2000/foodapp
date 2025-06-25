@@ -1,74 +1,58 @@
 import DeletConfirmation from "../../../shared/DeleteConfirmation/DeleteConfirmation";
 import Header from "../../../shared/Header/Header";
 import logo from "../../../assets/images/recipe-img.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Paginations from "../../../shared/pagination/Pagination";
-import { CiSearch } from "react-icons/ci";
 import Categoriesdata from "../categoriesData/Categoriesdata";
 import SubHeader from "../../../shared/SubHeader/SubHeader";
 import useModal from "../../../hooks/useModal";
 import Table from "../../../shared/ReusableTable/Table";
 import ActionTable from "../../../shared/ActionTable/ActionTable";
-import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
-import { CATEGORY_URL } from "../../../services/Api/APiconfig";
-import { toast } from "react-toastify";
-import { useFoodApp } from "../../../context/AppFoodProvider";
+import {
+  useCategories,
+  useDeleteCategory,
+} from "../../../services/apiCategory";
+import usePagination from "../../../hooks/usePagination";
+import Filter from "../../../shared/Filter/Filter";
 export default function Categorieslist() {
+  const [searchName, setSearchName] = useState("");
   const {
-    searchName,
-    setSearchName,
-    categories,
-    refreshCategories,
-    TotalofPages,
-    setcurrentPage,
+    totalPages,
+    currentPage,
+    updateTotalPages,
+    updateCurrentPage,
     ShowNextButton,
     ShowPrevButton,
-  } = useFoodApp();
+  } = usePagination();
+  const {
+    Categories,
+    isPending: isLoadingCategories,
+    totalNumberOfPages,
+  } = useCategories({
+    pageSize: 6,
+    pageNumber: currentPage,
+    name: searchName,
+  });
+  useEffect(() => {
+    if (Categories) {
+      updateTotalPages(totalNumberOfPages);
+    }
+  }, [Categories, updateTotalPages, totalNumberOfPages]);
   const { isOpen, closeModal, openModal } = useModal();
   const [categoryId, setcategoryId] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const currentCategory = categories?.filter(
+  const currentCategory = Categories?.filter(
     (item) => item?.id === categoryId
   )[0];
-  const handleDeleteCategory = async () => {
-    setIsLoading(true);
-    try {
-      await PrivateaxiosInstances.delete(
-        CATEGORY_URL.DELETE_CATOGERY(categoryId)
-      );
-      refreshCategories();
-      toast.success("Category was removed successfully");
-    } catch (error) {
-      toast.error("Failed to remove Category");
-    } finally {
-      setIsLoading(false);
-      closeModal();
-    }
-  };
-  // async function getAllCategries(pageSize, pageNumber, name) {
-  //   setIsLoading(true);
-  //   try {
-  //     const response = await PrivateaxiosInstances.get(
-  //       CATEGORY_URL.GET_CATOGERY,
-  //       {
-  //         params: {
-  //           pageSize: pageSize,
-  //           pageNumber: pageNumber,
-  //           name: name,
-  //         },
-  //       }
-  //     );
-  //     setcategories(response.data.data);
-  //     getTotalofPages(response?.data?.totalNumberOfPages);
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }
-  // useEffect(() => {
-  //   getAllCategries(6, currentPage + 1, searchname);
-  // }, [currentPage, searchname]);
+  const { isDeleting, deleteCategory } = useDeleteCategory();
+  function handleDeleteCategory(id) {
+    deleteCategory(id, {
+      onSuccess: () => {
+        closeModal();
+      },
+    });
+  }
+  const { data } = useCategories();
+  console.log(data);
   const handleSearchName = (e) => {
     setSearchName(e.target.value);
   };
@@ -126,29 +110,26 @@ export default function Categorieslist() {
         btnName={"Add New Category"}
         handleBtnAction={handleAddCategory}
       />
-      <div className="search-input-wrapper position-relative w-100 mb-4">
-        <div className="search-icon position-absolute top-50 translate-middle-y ms-3">
-          <CiSearch className="fs-5 text-muted" />
-        </div>
-        <input
-          type="search"
-          value={searchName}
-          placeholder="Search by name"
-          className="form-control ps-5 py-2 rounded-3 border"
-          onChange={handleSearchName}
-        />
-      </div>
+
+      <Filter
+        showTags={false}
+        searchValue={searchName}
+        showCategory={false}
+        searchPlaceholder="Search by name "
+        onSearchChange={handleSearchName}
+      />
       <Table
         columns={columns}
-        data={categories}
-        isLoading={isLoading}
+        data={Categories}
+        isLoading={isLoadingCategories}
         message={"No Category Available"}
       />
       {isOpen("AddCategory") && (
         <Categoriesdata
-          closeAdd={closeModal}
+          show={isOpen("AddCategory")}
+          closeModal={closeModal}
           currentCategory={currentCategory}
-          refreshCategories={() => refreshCategories()}
+          key={currentCategory?.id}
         />
       )}
       {isOpen("DeleteCategory") && (
@@ -156,13 +137,14 @@ export default function Categorieslist() {
           show={isOpen("DeleteCategory")}
           onHide={closeModal}
           onDelete={() => handleDeleteCategory(categoryId)}
-          isLoading={isLoading}
+          isLoading={isDeleting}
         />
       )}
-      {categories.length >= 0 && (
+      {Categories?.length > 0 && totalPages > 1 && (
         <Paginations
-          TotalofPages={TotalofPages}
-          setcurrentPage={setcurrentPage}
+          TotalofPages={totalPages}
+          currentPage={currentPage}
+          updateCurrentPage={updateCurrentPage}
           ShowNextButton={ShowNextButton}
           ShowPrevButton={ShowPrevButton}
         />

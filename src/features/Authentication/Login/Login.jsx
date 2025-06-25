@@ -1,14 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FormProvider, useForm } from "react-hook-form";
-import { axiosInstances } from "../../../services/Api/ApInstance";
-import { USER_URLS } from "../../../services/Api/APiconfig";
 import { useFoodApp } from "../../../context/AppFoodProvider";
 import ReusableForm from "../../../shared/AuthForm/ReusableForm";
 import { FormInput } from "../../../shared/AuthForm/FormInput";
 import ButtonForm from "../../../shared/AuthForm/ButtonForm";
 import { getValidationRules } from "../../../hooks/usevalidations";
 import TitleAuth from "../../../shared/AuthForm/TitleAuth";
+import { useLogin } from "../../../services/apiAuth";
 export default function Login() {
   const { SaveLoginData } = useFoodApp();
   const { email, password } = getValidationRules();
@@ -19,16 +18,24 @@ export default function Login() {
       password: "",
     },
   });
-  async function onSubmit(data) {
-    try {
-      const response = await axiosInstances.post(USER_URLS.LOGIN, data);
-      localStorage.setItem("token", response.data.token);
-      SaveLoginData();
-      toast.success("Login Successfully");
-      navigate("/dashboard");
-    } catch (errors) {
-      toast.error(errors?.response?.data?.message);
-    }
+  const { mutate: loginUser, isPending } = useLogin();
+  function onSubmit(data) {
+    loginUser(data, {
+      onSuccess: (data) => {
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+        SaveLoginData();
+        toast.success("Logged in successfully!");
+        navigate("/dashboard");
+      },
+      onError: (error) => {
+        toast.error(
+          error.response?.data?.message ||
+            "Login failed. Please check your credentials."
+        );
+      },
+    });
   }
   return (
     <>
@@ -61,8 +68,8 @@ export default function Login() {
               Forget Password?
             </Link>
           </div>
-          <ButtonForm isSubmitting={methods.formState.isSubmitting}>
-            Login
+          <ButtonForm isSubmitting={isPending} disabled={isPending}>
+            {isPending ? "Logging in..." : "Login"}
           </ButtonForm>
         </ReusableForm>
       </FormProvider>

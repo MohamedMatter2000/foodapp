@@ -13,8 +13,7 @@ import logeouticon from "../../assets/images/logo-out.png";
 import { toast } from "react-toastify";
 import { useFoodApp } from "../../context/AppFoodProvider";
 export default function MainSidebar() {
-  const { loginData, setCurrentUser } = useFoodApp();
-  const usergroup = loginData.userGroup;
+  const { usergroup } = useFoodApp();
   const [isCollapse, setCollapse] = useState(false);
   const location = useLocation();
   const navgate = useNavigate();
@@ -25,7 +24,6 @@ export default function MainSidebar() {
     localStorage.removeItem("token");
     toast.info("loge out Succeclly");
     navgate("/login");
-    setCurrentUser(null);
   }
   useEffect(() => {
     const handleResize = () => {

@@ -1,123 +1,222 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { FaUser } from "react-icons/fa";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { imageURL, USER_URLS } from "../../services/Api/APiconfig";
-import { PrivateaxiosInstances } from "../../services/Api/ApInstance";
-// import {
-//   COUNTRY_VAILDTION,
-//   EMAIL_VAILDTION,
-//   PASSWORD_VAILDTION,
-//   PHONE_VAILDTION,
-//   USER_NAME,
-// } from "../../services/validation";
-import {
-  FaLock,
-  FaEnvelope,
-  FaEye,
-  FaEyeSlash,
-  FaSpinner,
-  FaPhone,
-} from "react-icons/fa";
-import { FaEarthAmericas } from "react-icons/fa6";
+import { imageURL } from "../../services/aPiConfig";
 import { useEffect } from "react";
+import { useCurrentUser, useUpdateCurrentUser } from "../../services/apiUser";
+import { pathToFileObject } from "../../utils/helpers";
+import ButtonForm from "../../shared/AuthForm/ButtonForm";
+import ReusableForm from "../../shared/AuthForm/ReusableForm";
+import { getValidationRules } from "../../hooks/usevalidations";
+import { FormInput } from "../../shared/AuthForm/FormInput";
+import Spinner from "../../shared/NoDate/Spinner";
 import { useFoodApp } from "../../context/AppFoodProvider";
-// import TitleAuth from "../../shared/TitleAuth/TitleAuth";
 export default function Profile() {
-  const { imageuser, setImageuser, getCurrentUser, currentUser } = useFoodApp();
-  const [showpassword, setshowpassword] = useState(true);
+  // const { userData, isPending, isSuccess } = useCurrentUser();
+  const { loginData, CurrentUser } = useFoodApp();
+  const userData = CurrentUser.userData;
+  const isSuccess = CurrentUser.isSuccess;
+  const isPending = CurrentUser.isPending;
+  const [imagePreview, setImagePreview] = useState(null);
   const navigate = useNavigate();
-  function handleshowpass() {
-    setshowpassword((prev) => !prev);
-  }
-  // function logeout() {
-  //   localStorage.removeItem("token");
-  //   navigate("/login");
-  // }
-  const {
-    register,
-    formState: { errors, isSubmitting },
-    setValue,
-    handleSubmit,
-  } = useForm({ mode: "onChange" });
-  const pathToFileObject = async (imagePath) => {
-    try {
-      const fullImageUrl = `${imageURL}${imagePath}`;
-      setImageuser(imagePath);
-      const response = await fetch(fullImageUrl);
-      if (!response.ok) throw new Error("Failed to fetch image");
-      const blob = await response.blob();
-      const fileName = imagePath;
-      const file = new File([blob], fileName, { type: blob.type });
-      return file;
-    } catch (error) {
-      console.error("Error converting path to File object:", error);
-      return null;
-    }
-  };
-  async function onsubmit(data) {
+  const { Updateuser, isUpdating } = useUpdateCurrentUser();
+  const { email, password, country, phoneNumber, userName } =
+    getValidationRules();
+  const methods = useForm({
+    defaultValues: {
+      userName: "",
+      email: "",
+      country: "",
+      phoneNumber: "",
+      profileImage: null,
+      confirmPassword: "",
+    },
+  });
+  const { trigger, watch, register, setValue } = methods;
+  const watchedImage = watch("profileImage");
+  function onsubmit(data) {
     const formData = new FormData();
     for (let key in data) {
       if (key === "profileImage") {
-        formData.append(key, data?.[key]?.[0]);
+        if (data[key] && data[key].length > 0) {
+          formData.append(key, data[key][0]);
+        }
       } else {
         formData.append(key, data[key]);
       }
     }
-    console.log(data);
-    try {
-      const response = await PrivateaxiosInstances.put(
-        USER_URLS.UPADTE_CURRENT_USER,
-        formData
-      );
-      await getCurrentUser();
-      // logeout();
-      toast.success("Update successlly");
-      console.log(response.data);
-    } catch (errors) {
-      toast.error("failed update check password");
-      console.log(errors);
-    }
+    Updateuser(formData, {
+      onSuccess: () => {
+        toast.success("Update successfully");
+        setValue("confirmPassword", "");
+      },
+      onError: (error) => {
+        toast.error(
+          error?.response?.data?.message || "An unexpected error occurred."
+        );
+      },
+    });
   }
-
   useEffect(() => {
-    if (currentUser) {
-      console.log(currentUser);
-      setValue("userName", currentUser?.userName);
-      setValue("email", currentUser?.email);
-      setValue("country", currentUser?.country);
-      setValue("phoneNumber", currentUser?.phoneNumber);
-      if (currentUser?.imagePath) {
-        (async () => {
-          try {
-            const fullImageUrl = `${imageURL}${currentUser?.imagePath}`;
-            setImageuser(currentUser?.imagePath);
-            const response = await fetch(fullImageUrl);
-            if (!response.ok) throw new Error("Failed to fetch image");
-            const blob = await response.blob();
-            const fileName = currentUser?.imagePath;
-            const file = new File([blob], fileName, { type: blob.type });
-            if (file) {
-              setValue("profileImage", [file]);
-            }
-            return file;
-          } catch (error) {
-            console.error("Error converting path to File object:", error);
-            return null;
+    if (
+      watchedImage &&
+      watchedImage.length > 0 &&
+      watchedImage[0] instanceof File
+    ) {
+      const newPreviewUrl = URL.createObjectURL(watchedImage[0]);
+      setImagePreview(newPreviewUrl);
+      return () => URL.revokeObjectURL(newPreviewUrl);
+    } else if (isSuccess && userData) {
+      setValue("userName", userData.userName);
+      setValue("email", userData.email);
+      setValue("country", userData.country);
+      setValue("phoneNumber", userData.phoneNumber);
+      if (userData.imagePath) {
+        setImagePreview(`${imageURL}${userData.imagePath}`);
+        const setInitialImage = async () => {
+          const file = await pathToFileObject(userData.imagePath);
+          if (file) {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            setValue("profileImage", dataTransfer.files);
           }
-        })();
+        };
+        setInitialImage();
+      } else {
+        setImagePreview(null);
       }
     }
-  }, [currentUser, setValue, imageuser, setImageuser]);
+  }, [isSuccess, userData, setValue, watchedImage]);
+
   return (
     <>
-      {/* <TitleAuth
-        heading="Update"
-        paragraph="Welcom Back! Please enter Your details"
-      /> */}
-      <form onSubmit={handleSubmit(onsubmit)}>
+      {isPending ? (
+        <Spinner />
+      ) : (
+        <FormProvider {...methods}>
+          <ReusableForm onSubmit={methods.handleSubmit(onsubmit)}>
+            <div>
+              <label htmlFor="profileImage" className="form-label py-3 w-100  ">
+                <div className="d-flex align-items-center justify-content-center flex-column w-100">
+                  <input
+                    {...register("profileImage")}
+                    type="file"
+                    className="form-control d-none"
+                    id="profileImage"
+                    accept="image/*"
+                  />
+                  {imagePreview ? (
+                    <img
+                      className="images rounded-circle"
+                      src={imagePreview}
+                      alt="Profile Preview"
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        objectFit: "cover",
+                        border: "2px solid #ddd",
+                      }}
+                    />
+                  ) : (
+                    <FaUser
+                      style={{
+                        marginTop: "9px",
+                        fontSize: "50px",
+                        color: "#6c757d",
+                      }}
+                    />
+                  )}
+                  <small className="text-muted mt-2">
+                    Click to change photo
+                  </small>
+                </div>
+              </label>
+              {methods.formState.errors.profileImage && (
+                <div className="text-danger">
+                  {methods.formState.errors.profileImage.message}
+                </div>
+              )}
+            </div>
+            <FormInput
+              name="userName"
+              rules={userName}
+              placeholder="Type userName"
+            />
+            <FormInput
+              name="country"
+              rules={country}
+              placeholder="Type Your country"
+            />
+            <FormInput
+              name="phoneNumber"
+              type="tel"
+              rules={phoneNumber}
+              placeholder="Type Your phoneNumber"
+            />
+            <FormInput
+              name="email"
+              rules={email}
+              placeholder="Type Your Email"
+              type="email"
+            />
+            <FormInput
+              name="confirmPassword"
+              type="password"
+              rules={password}
+              placeholder="Type Your Password"
+            />
+            <ButtonForm isSubmitting={isUpdating} disabled={isUpdating}>
+              {isUpdating ? "Updating..." : "Update"}
+            </ButtonForm>
+          </ReusableForm>
+        </FormProvider>
+      )}
+    </>
+  );
+}
+// useEffect(() => {
+//   if (isSuccess) {
+//     setValue("userName", userData?.userName);
+//     setValue("email", userData?.email);
+//     setValue("country", userData?.country);
+//     setValue("phoneNumber", userData?.phoneNumber);
+//     if (userData.imagePath) {
+//       (async () => {
+//         const file = await pathToFileObject(userData.imagePath);
+//         if (file) {
+//           setValue("profileImage", [file]);
+//         }
+//       })();
+//     }
+//   }
+// }, [isSuccess, userData, setValue]);
+{
+  /* {imageuser ? (
+                  <img
+                    className="images rounded-2"
+                    src={`${imageURL + imageuser}`}
+                    alt="Profile"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <FaUser style={{ marginTop: "9px", fontSize: "50px" }} />
+                )} */
+}
+// const {
+//   register,
+//   formState: { errors },
+//   setValue,
+//   handleSubmit,
+// } = useForm({ mode: "onChange" });
+{
+  /* <form onSubmit={handleSubmit(onsubmit)}>
         <div className="container-form d-flex flex-column  gap-4">
           <div>
             <label htmlFor="profileImage" className="form-label py-3 w-100  ">
@@ -244,9 +343,7 @@ export default function Profile() {
         </div>
         <div className="links text-end mb-3"></div>
         <button className="btn btn-success w-75 d-block text-center my-2 mx-auto">
-          {isSubmitting ? <FaSpinner /> : "Update"}
+          {isPending ? <FaSpinner /> : "Update"}
         </button>
-      </form>
-    </>
-  );
+      </form> */
 }

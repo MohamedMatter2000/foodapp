@@ -3,14 +3,13 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import loge from "../../../assets/images/Auth-logo.jpg";
-import { USER_URLS } from "../../../services/Api/APiconfig";
-import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
 import { getValidationRules } from "../../../hooks/usevalidations";
 import { FormProvider, useForm } from "react-hook-form";
 import ReusableForm from "../../../shared/AuthForm/ReusableForm";
 import { FormInput } from "../../../shared/AuthForm/FormInput";
 import ButtonForm from "../../../shared/AuthForm/ButtonForm";
 import TitleAuth from "../../../shared/AuthForm/TitleAuth";
+import { useChangePassword } from "../../../services/apiAuth";
 export default function Changepassword() {
   const navigate = useNavigate();
   const methods = useForm({
@@ -29,15 +28,17 @@ export default function Changepassword() {
     }
   }, [confirmPassword, trigger, NewPassword]);
   const { password, confirmNewPassword } = getValidationRules(watch);
-
-  async function onSubmit(data) {
-    try {
-      await PrivateaxiosInstances.put(USER_URLS.CHANGE_PASSWORD, data);
-      toast.success("Password has been updated successfully");
-      navigate("/Login");
-    } catch (errors) {
-      toast.error(errors.response.data.message);
-    }
+  const { mutate: ChangePassword, isPending } = useChangePassword();
+  function onSubmit(data) {
+    ChangePassword(data, {
+      onSuccess: () => {
+        toast.success("Password has been updated successfully");
+        navigate("/Login");
+      },
+      onError: (error) => {
+        toast.error(error.response.data.message);
+      },
+    });
   }
   return (
     <div className="popup-overlay row">
@@ -70,9 +71,7 @@ export default function Changepassword() {
                 placeholder="Confirm New Password"
                 type="password"
               />
-              <ButtonForm isSubmitting={methods.formState.isSubmitting}>
-                Submit
-              </ButtonForm>
+              <ButtonForm isSubmitting={isPending}>Submit</ButtonForm>
             </ReusableForm>
           </FormProvider>
         </div>
