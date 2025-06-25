@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { apiClient } from "./APiconfig";
+import { apiClient } from "./aPiConfig";
 export const useRecipes = (params = {}) => {
   const { data, isPending } = useQuery({
     queryKey: ["Recipes", params],
