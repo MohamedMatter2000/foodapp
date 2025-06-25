@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import { apiClient } from "./aPiconfig";
+import { apiClient } from "./aPiConfig";
 export const useCurrentUser = () => {
   const token = localStorage.getItem("token");
   const queryClient = useQueryClient();

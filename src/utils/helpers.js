@@ -1,4 +1,4 @@
-import { imageURL } from "../services/aPiconfig";
+import { imageURL } from "../services/aPiConfig";
 export function removeDuplicates(array) {
   const seen = new Set();
   return array

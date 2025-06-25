@@ -4,7 +4,7 @@ import Header from "../../../shared/Header/Header";
 import Minheader from "../../../shared/SubHeader/SubHeader";
 import logo from "../../../assets/images/recipe-img.png";
 import DeletConfirmation from "../../../shared/DeleteConfirmation/DeleteConfirmation";
-import { imageURL } from "../../../services/aPiconfig";
+import { imageURL } from "../../../services/aPiConfig";
 import { useFoodApp } from "../../../context/AppFoodProvider";
 import Noimg from "../../../assets/images/nodata.png";
 import Paginations from "../../../shared/pagination/Pagination";

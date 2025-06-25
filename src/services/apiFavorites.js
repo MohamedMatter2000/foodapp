@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFoodApp } from "../context/AppFoodProvider";
-import { apiClient } from "./aPiconfig";
+import { apiClient } from "./aPiConfig";
 
 export function useFavorites() {
   const { usergroup } = useFoodApp();

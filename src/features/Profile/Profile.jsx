@@ -4,7 +4,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { imageURL } from "../../services/aPiconfig";
+import { imageURL } from "../../services/aPiConfig";
 import { useEffect } from "react";
 import { useCurrentUser, useUpdateCurrentUser } from "../../services/apiUser";
 import { pathToFileObject } from "../../utils/helpers";

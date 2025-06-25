@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { imageURL } from "../../../services/aPiconfig";
+import { imageURL } from "../../../services/aPiConfig";
 import Noimg from "../../../assets/images/nodata.png";
 import { Modal } from "react-bootstrap";
 import { formatDate } from "../../../utils/helpers";
