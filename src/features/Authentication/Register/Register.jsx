@@ -5,8 +5,7 @@ import ReusableForm from "../../../shared/AuthForm/ReusableForm";
 import { FormInput } from "../../../shared/AuthForm/FormInput";
 import ButtonForm from "../../../shared/AuthForm/ButtonForm";
 import { useEffect } from "react";
-import { axiosInstances } from "../../../services/Api/ApInstance";
-import { USER_URLS } from "../../../services/Api/APiconfig";
+import { useRegister } from "../../../services/apiAuth";
 import TitleAuth from "../../../shared/AuthForm/TitleAuth";
 import { getValidationRules } from "../../../hooks/usevalidations";
 export default function Register() {
@@ -31,14 +30,19 @@ export default function Register() {
   }, [confirmNewPassword, trigger, NewPassword]);
   const { email, password, country, phoneNumber, userName, confirmPassword } =
     getValidationRules(watch);
-  async function onSubmit(data) {
-    try {
-      await axiosInstances.post(USER_URLS.REGISTER, data);
-      toast.success("Register Account Successfully");
-      navigate("/VertifyAccount", { state: { email: data.email } });
-    } catch (errors) {
-      toast.error(errors.response.data.message);
-    }
+  const { mutate: registerUser, isPending } = useRegister();
+  function onSubmit(data) {
+    registerUser(data, {
+      onSuccess: () => {
+        toast.success(
+          "Registration successful! Please check your email to verify your account."
+        );
+        navigate("/VertifyAccount", { state: { email: data.email } });
+      },
+      onError: (error) => {
+        toast.error(error.response?.data?.message || "Registration failed.");
+      },
+    });
   }
   return (
     <>
@@ -104,9 +108,7 @@ export default function Register() {
               Login Now?
             </Link>
           </div>
-          <ButtonForm isSubmitting={methods.formState.isSubmitting}>
-            Register
-          </ButtonForm>
+          <ButtonForm isSubmitting={isPending}>Register</ButtonForm>
         </ReusableForm>
       </FormProvider>
     </>

@@ -1,13 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { USER_URLS } from "../../../services/Api/APiconfig";
-import { axiosInstances } from "../../../services/Api/ApInstance";
 import TitleAuth from "../../../shared/AuthForm/TitleAuth";
 import { FormProvider, useForm } from "react-hook-form";
 import ReusableForm from "../../../shared/AuthForm/ReusableForm";
 import { FormInput } from "../../../shared/AuthForm/FormInput";
 import ButtonForm from "../../../shared/AuthForm/ButtonForm";
 import { getValidationRules } from "../../../hooks/usevalidations";
+import { useVerifyAccount } from "../../../services/apiAuth";
 export default function Vertify() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -18,14 +17,17 @@ export default function Vertify() {
       seed: "",
     },
   });
-  async function onSubmit(data) {
-    try {
-      await axiosInstances.put(USER_URLS.VERIFY_ACCOUNT, data);
-      toast.success("Vertify Account Successfully");
-      navigate("/Login");
-    } catch (errors) {
-      toast.error(errors.response.data.message);
-    }
+  const { mutate: VerifyAccount, isPending } = useVerifyAccount();
+  function onSubmit(data) {
+    VerifyAccount(data, {
+      onSuccess: () => {
+        toast.success("Vertify Account Successfully");
+        navigate("/Login");
+      },
+      onError: (error) => {
+        toast.error(error.response.data.message);
+      },
+    });
   }
   return (
     <>
@@ -43,9 +45,7 @@ export default function Vertify() {
             disabled
           />
           <FormInput name="seed" rules={OTP} placeholder="Type OTP" />
-          <ButtonForm isSubmitting={methods.formState.isSubmitting}>
-            Submit
-          </ButtonForm>
+          <ButtonForm isSubmitting={isPending}>Submit</ButtonForm>
         </ReusableForm>
       </FormProvider>
     </>

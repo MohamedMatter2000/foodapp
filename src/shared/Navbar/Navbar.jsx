@@ -3,9 +3,10 @@
 import React from "react";
 import { FaBell, FaUser } from "react-icons/fa";
 import { useFoodApp } from "../../context/AppFoodProvider";
-import { imageURL } from "../../services/Api/APiconfig";
+import { imageURL } from "../../services/aPiConfig";
 export default function Navbar() {
-  const { loginData, imageuser } = useFoodApp();
+  const { loginData, CurrentUser } = useFoodApp();
+  const imageuser = CurrentUser?.userData?.imagePath;
   return (
     <div className="pt-1 pb-3">
       <nav className="navbar navbar-expand-lg bg-body-tertiary rounded-3">
@@ -20,8 +21,12 @@ export default function Navbar() {
                   {imageuser ? (
                     <img
                       src={`${imageURL + imageuser}`}
-                      style={{ maxWidth: 30 }}
-                      className="rounded "
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        objectFit: "cover",
+                      }}
+                      className="images rounded-circle"
                     />
                   ) : (
                     <FaUser className="mt-2" />

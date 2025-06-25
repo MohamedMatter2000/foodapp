@@ -1,24 +1,15 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { imageURL } from "../../../services/Api/APiconfig";
+import { imageURL } from "../../../services/aPiConfig";
 import Noimg from "../../../assets/images/nodata.png";
 import { FaSpinner, FaHeart } from "react-icons/fa";
 import { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
+import { formatDate } from "../../../utils/helpers";
+import { useFoodApp } from "../../../context/AppFoodProvider";
 export default function RecipeView({ show, onHide, Recipe }) {
   const [isLoading, setIsLoading] = useState(false);
-  const formatDate = (dateString) => {
-    try {
-      return new Date(dateString).toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch (error) {
-      return "Invalid Date";
-    }
-  };
+  const { usergroup } = useFoodApp();
   const getCategoryNames = (categories) => {
     if (!categories || !Array.isArray(categories)) return [];
     return categories.map((cat) => cat?.name || "Unknown");
@@ -113,51 +104,53 @@ export default function RecipeView({ show, onHide, Recipe }) {
           </div>
         )}
       </Modal.Body>
-      <Modal.Footer
-        className="border-0 pt-2 pb-3 px-4"
-        style={{
-          background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
-        }}
-      >
-        <div className="d-flex gap-2 w-100 justify-content-end">
-          <Button
-            variant="outline-secondary"
-            onClick={onHide}
-            disabled={isLoading}
-            className="px-4 fw-semibold"
-            style={{ borderRadius: "8px" }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="success"
-            // onClick={addToFavorites}
-            disabled={isLoading || !Recipe?.id}
-            className="px-4 d-flex align-items-center gap-2 fw-semibold shadow-sm"
-            style={{
-              minWidth: "160px",
-              borderRadius: "8px",
-              background: "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
-              border: "none",
-            }}
-          >
-            {isLoading ? (
-              <>
-                <FaSpinner
-                  className="spinner-border-sm"
-                  style={{ animation: "spin 1s linear infinite" }}
-                />
-                Adding...
-              </>
-            ) : (
-              <>
-                <FaHeart size={14} />
-                Add To Favorites
-              </>
-            )}
-          </Button>
-        </div>
-      </Modal.Footer>
+      {usergroup === "SystemUser" && (
+        <Modal.Footer
+          className="border-0 pt-2 pb-3 px-4"
+          style={{
+            background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+          }}
+        >
+          <div className="d-flex gap-2 w-100 justify-content-end">
+            <Button
+              variant="outline-secondary"
+              onClick={onHide}
+              disabled={isLoading}
+              className="px-4 fw-semibold"
+              style={{ borderRadius: "8px" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="success"
+              // onClick={addToFavorites}
+              disabled={isLoading || !Recipe?.id}
+              className="px-4 d-flex align-items-center gap-2 fw-semibold shadow-sm"
+              style={{
+                minWidth: "160px",
+                borderRadius: "8px",
+                background: "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
+                border: "none",
+              }}
+            >
+              {isLoading ? (
+                <>
+                  <FaSpinner
+                    className="spinner-border-sm"
+                    style={{ animation: "spin 1s linear infinite" }}
+                  />
+                  Adding...
+                </>
+              ) : (
+                <>
+                  <FaHeart size={14} />
+                  Add To Favorites
+                </>
+              )}
+            </Button>
+          </div>
+        </Modal.Footer>
+      )}
     </Modal>
   );
 }

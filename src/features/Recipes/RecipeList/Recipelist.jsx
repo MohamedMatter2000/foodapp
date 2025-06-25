@@ -4,74 +4,72 @@ import Header from "../../../shared/Header/Header";
 import Minheader from "../../../shared/SubHeader/SubHeader";
 import logo from "../../../assets/images/recipe-img.png";
 import DeletConfirmation from "../../../shared/DeleteConfirmation/DeleteConfirmation";
-import { imageURL, RECEIPE_URL } from "../../../services/Api/APiconfig";
+import { imageURL } from "../../../services/aPiConfig";
 import { useFoodApp } from "../../../context/AppFoodProvider";
 import Noimg from "../../../assets/images/nodata.png";
 import Paginations from "../../../shared/pagination/Pagination";
-import { CiSearch } from "react-icons/ci";
 import { useEffect, useState } from "react";
 import RecipeView from "../RecipeView/RecipeView";
 import ActionTable from "../../../shared/ActionTable/ActionTable";
 import Table from "../../../shared/ReusableTable/Table";
-import { PrivateaxiosInstances } from "../../../services/Api/ApInstance";
 import usePagination from "../../../hooks/usePagination";
 import useModal from "../../../hooks/useModal";
-import { toast } from "react-toastify";
+import {
+  useDeleteRecipe,
+  useRecipes,
+  useTags,
+} from "../../../services/apiRecipe";
+import { useCategories } from "../../../services/apiCategory";
+import { removeDuplicates } from "../../../utils/helpers";
+import Filter from "../../../shared/Filter/Filter";
 export default function Recipelist() {
-  const [recipesylist, setrecipeslist] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [recipeId, setrecipeId] = useState("");
-  const {
-    TotalofPages,
-    getTotalofPages,
-    currentPage,
-    setcurrentPage,
-    ShowNextButton,
-    ShowPrevButton,
-  } = usePagination();
+  const navigate = useNavigate();
   const { isOpen, closeModal, openModal } = useModal();
-  const { tagslist, categories, usergroup } = useFoodApp();
-  const viewrecipe = recipesylist?.filter((item) => item?.id === recipeId)[0];
+  const { totalNumberOfRecords } = useCategories();
+  const { usergroup, tagsData } = useFoodApp();
   const [filterrecipe, setfilterrecipe] = useState({
     TagSelected: "",
     searchname: "",
     SelectedCategory: "",
   });
-  const navigate = useNavigate();
-  async function getAllRecipe(pageSize, pageNumber, tagId, name, categoryId) {
-    setIsLoading(true);
-    try {
-      const response = await PrivateaxiosInstances.get(RECEIPE_URL.GET_RECIPE, {
-        params: {
-          pageSize: pageSize,
-          pageNumber: pageNumber,
-          name: name,
-          tagId: tagId,
-          categoryId: categoryId,
-        },
-      });
-      setrecipeslist(response?.data?.data);
-      getTotalofPages(response?.data?.totalNumberOfPages);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  useEffect(() => {
-    getAllRecipe(
-      10,
-      currentPage + 1,
-      filterrecipe.TagSelected,
-      filterrecipe.searchname,
-      filterrecipe.SelectedCategory
-    );
-  }, [
+  const {
+    totalPages,
     currentPage,
-    filterrecipe.TagSelected,
-    filterrecipe.searchname,
-    filterrecipe.SelectedCategory,
-  ]);
+    updateTotalPages,
+    updateCurrentPage,
+    ShowNextButton,
+    ShowPrevButton,
+  } = usePagination();
+  const total = totalNumberOfRecords;
+  const { Categories } = useCategories(
+    {
+      pageSize: total,
+    },
+    { enabled: !!total }
+  );
+
+  const { isDeleting, deleteRecipe } = useDeleteRecipe();
+  function handleDeleteRecipe(id) {
+    deleteRecipe(id, {
+      onSuccess: () => {
+        closeModal();
+      },
+    });
+  }
+  const { Recipes, isPending, totalNumberOfPages } = useRecipes({
+    pageSize: 10,
+    pageNumber: currentPage,
+    name: filterrecipe.searchname,
+    tagId: filterrecipe.TagSelected,
+    categoryId: filterrecipe.SelectedCategory,
+  });
+  useEffect(() => {
+    if (Recipes) {
+      updateTotalPages(totalNumberOfPages);
+    }
+  }, [Recipes, updateTotalPages, totalNumberOfPages]);
+  const viewrecipe = Recipes?.filter((item) => item?.id === recipeId)[0];
   function handleSearchName(e) {
     setfilterrecipe({
       ...filterrecipe,
@@ -97,36 +95,6 @@ export default function Recipelist() {
   const handleAddRecipe = () => {
     navigate("/dashboard/recipes/new-recipe");
   };
-  function removeDuplicates(array) {
-    const seen = new Set();
-    return array
-      ?.map((item) => ({
-        ...item,
-        name: item.name.replace(/\s+/g, ""),
-      }))
-      .filter((item) => {
-        if (seen.has(item.name)) {
-          return false;
-        }
-        seen.add(item.name);
-        return true;
-      });
-  }
-  async function handleDeletRecipe(id) {
-    setIsLoading(true);
-    try {
-      const response = await PrivateaxiosInstances.delete(
-        RECEIPE_URL.DELETE_RECIPE(id)
-      );
-      toast.success("Delete Recipe Succeclly");
-      getAllRecipe();
-    } catch (error) {
-      toast.error("Delete Recipe failed");
-    } finally {
-      setIsLoading(false);
-      closeModal();
-    }
-  }
   function handleViewDelete(id) {
     setrecipeId(id);
     openModal("DeleteRecipe");
@@ -146,7 +114,7 @@ export default function Recipelist() {
       title: "Imges",
       render: (row) => (
         <img
-          className="images"
+          className="images rounded-2"
           src={row?.imagePath ? `${imageURL}${row.imagePath}` : Noimg}
         />
       ),
@@ -184,7 +152,7 @@ export default function Recipelist() {
       ),
     },
   ];
-  let uniqueArray = removeDuplicates(categories);
+  let uniqueArray = removeDuplicates(Categories);
   return (
     <div>
       {usergroup !== "SystemUser" && (
@@ -202,69 +170,28 @@ export default function Recipelist() {
           />
         </>
       )}
-      <div className="Total-search-tag-cate d-flex flex-column flex-lg-row gap-3  my-3">
-        <div className="search-input-wrapper position-relative w-100">
-          <div className="search-icon position-absolute top-50 translate-middle-y ms-3">
-            <CiSearch className="fs-5 text-muted" />
-          </div>
-          <input
-            type="search"
-            placeholder="Search by name"
-            className="form-control ps-5 py-2 rounded-3 border"
-            onChange={handleSearchName}
-          />
-        </div>
-        <div className="w-100">
-          <select
-            className="form-select"
-            aria-label="Default select example"
-            onChange={handleSelectedTag}
-          >
-            <option selected>Tags</option>
-            {tagslist &&
-              tagslist?.map((tag) => (
-                <option key={tag.id} value={tag.id}>
-                  {tag.name}
-                </option>
-              ))}
-          </select>
-        </div>
-        <div className="selectedcategary w-100 ">
-          <select
-            className="form-select"
-            aria-label="Default select example"
-            onChange={handleSelectedCategory}
-          >
-            <option selected>Category</option>
-            {uniqueArray &&
-              uniqueArray.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name.trim()}
-                </option>
-              ))}
-          </select>
-        </div>
-      </div>
+      <Filter
+        tagsData={tagsData}
+        categoryData={uniqueArray}
+        searchValue={filterrecipe.searchname}
+        selectedCategory={filterrecipe.SelectedCategory}
+        selectedTag={filterrecipe.TagSelected}
+        onSearchChange={handleSearchName}
+        onTagChange={handleSelectedTag}
+        onCategoryChange={handleSelectedCategory}
+      />
       <Table
         columns={columns}
-        data={recipesylist}
-        isLoading={isLoading}
+        data={Recipes}
+        isLoading={isPending}
         message={"No Recipe Available"}
       />
-      {recipesylist.length > 0 && (
-        <Paginations
-          TotalofPages={TotalofPages}
-          setcurrentPage={setcurrentPage}
-          ShowNextButton={ShowNextButton}
-          ShowPrevButton={ShowPrevButton}
-        />
-      )}
       {isOpen("DeleteRecipe") && (
         <DeletConfirmation
           show={isOpen("DeleteRecipe")}
           onHide={closeModal}
-          onDelete={() => handleDeletRecipe(recipeId)}
-          isLoading={isLoading}
+          onDelete={() => handleDeleteRecipe(recipeId)}
+          isLoading={isDeleting}
         />
       )}
       {isOpen("ViewRecipe") && (
@@ -273,6 +200,15 @@ export default function Recipelist() {
           show={isOpen("ViewRecipe")}
           onHide={closeModal}
           key={viewrecipe?.id}
+        />
+      )}
+      {Recipes?.length > 0 && totalPages > 1 && (
+        <Paginations
+          TotalofPages={totalPages}
+          currentPage={currentPage}
+          updateCurrentPage={updateCurrentPage}
+          ShowNextButton={ShowNextButton}
+          ShowPrevButton={ShowPrevButton}
         />
       )}
     </div>

@@ -1,13 +1,12 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { USER_URLS } from "../../../services/Api/APiconfig";
-import { axiosInstances } from "../../../services/Api/ApInstance";
 import ReusableForm from "../../../shared/AuthForm/ReusableForm";
 import { FormInput } from "../../../shared/AuthForm/FormInput";
 import ButtonForm from "../../../shared/AuthForm/ButtonForm";
 import { getValidationRules } from "../../../hooks/usevalidations";
 import TitleAuth from "../../../shared/AuthForm/TitleAuth";
+import { useForgetPassword } from "../../../services/apiAuth";
 export default function ForgetPassword() {
   const navigate = useNavigate();
   const { email } = getValidationRules();
@@ -16,14 +15,17 @@ export default function ForgetPassword() {
       email: "",
     },
   });
-  async function onSubmit(data) {
-    try {
-      await axiosInstances.post(USER_URLS.FORGET_PASSWORD, data);
-      toast.success("Reset Password Now ");
-      navigate("/ResetPassword", { state: { email: data.email } });
-    } catch (errors) {
-      toast.error(errors.response.data.message);
-    }
+  const { mutate: ForgetPassword, isPending } = useForgetPassword();
+  function onSubmit(data) {
+    ForgetPassword(data, {
+      onSuccess: () => {
+        toast.success("Reset Password Now ");
+        navigate("/ResetPassword", { state: { email: data.email } });
+      },
+      onError: (error) => {
+        toast.error(error.response.data.message);
+      },
+    });
   }
   return (
     <>
@@ -46,9 +48,7 @@ export default function ForgetPassword() {
           >
             Login Now ?
           </Link>
-          <ButtonForm isSubmitting={methods.formState.isSubmitting}>
-            Submit
-          </ButtonForm>
+          <ButtonForm isSubmitting={isPending}>Submit</ButtonForm>
         </ReusableForm>
       </FormProvider>
     </>

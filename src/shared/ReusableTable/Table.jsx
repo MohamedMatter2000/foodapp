@@ -1,13 +1,14 @@
 /* eslint-disable react/prop-types */
 import Spinner from "../NoDate/Spinner";
 import { CiSquareRemove } from "react-icons/ci";
-export default function Table({ data, columns, isLoading, message }) {
+import { TbAlertTriangle } from "react-icons/tb";
+export default function Table({ data, columns, isLoading, message, error }) {
   return (
     <div>
-      <table className="table table-striped  table-hover text-center align-middle">
+      <table className="table table-striped table-hover text-center align-middle">
         <thead className="table-secondary overflow-visible">
           <tr>
-            {columns.map((column) => (
+            {columns?.map((column) => (
               <th
                 key={column.key}
                 scope="col"
@@ -21,11 +22,24 @@ export default function Table({ data, columns, isLoading, message }) {
         <tbody>
           {isLoading ? (
             <tr>
-              <td colSpan={7}>
+              <td colSpan={columns.length}>
                 <Spinner />
               </td>
             </tr>
-          ) : data.length === 0 ? (
+          ) : error ? (
+            <tr>
+              <td colSpan={columns.length} className="py-5 border-0">
+                <div className="text-center p-5">
+                  <div className="mb-4 text-danger opacity-75">
+                    <TbAlertTriangle size={100} />
+                  </div>
+                  <h5 className="text-danger mb-2">
+                    {error.message || "Failed To Get Date"}
+                  </h5>
+                </div>
+              </td>
+            </tr>
+          ) : data?.length === 0 ? (
             <tr>
               <td colSpan={columns.length} className="py-5 border-0">
                 <div className="text-center p-5">
@@ -37,10 +51,10 @@ export default function Table({ data, columns, isLoading, message }) {
               </td>
             </tr>
           ) : (
-            data.map((row) => (
+            data?.map((row) => (
               <tr key={row.id}>
                 {columns.map((col) => (
-                  <td key={col.id}>
+                  <td key={col.key}>
                     {col.render ? col.render(row) : row[col.key]}
                   </td>
                 ))}

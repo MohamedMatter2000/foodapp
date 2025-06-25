@@ -9,25 +9,17 @@ export default function DeleteConfirmation({
   show,
   onHide,
   onDelete,
-  isLoading = false,
+  isLoading,
   title = "Delete This Item?",
   message = "Are you sure you want to delete this item? This action cannot be undone.",
 }) {
   const handleDelete = () => {
-    if (!isLoading) {
-      onDelete();
-    }
-  };
-
-  const handleClose = () => {
-    if (!isLoading) {
-      onHide();
-    }
+    onDelete();
   };
   return (
     <Modal
       show={show}
-      onHide={handleClose}
+      onHide={onHide}
       size="md"
       centered
       backdrop={isLoading ? "static" : true}
@@ -43,7 +35,7 @@ export default function DeleteConfirmation({
             type="button"
             className="btn-close"
             aria-label="Close"
-            onClick={handleClose}
+            onClick={onHide}
           />
         )}
       </Modal.Header>
@@ -72,7 +64,7 @@ export default function DeleteConfirmation({
         <div className="d-flex gap-2 w-100 justify-content-end">
           <Button
             variant="outline-secondary"
-            onClick={handleClose}
+            onClick={onHide}
             disabled={isLoading}
             className="px-4"
           >
