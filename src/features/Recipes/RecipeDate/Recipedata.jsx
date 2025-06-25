@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-// import Minheader from "../../../shared/Min-header/Minheader";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { FaArrowUpFromBracket } from "react-icons/fa6";
