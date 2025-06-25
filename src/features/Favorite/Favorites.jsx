@@ -1,6 +1,5 @@
 // /* eslint-disable no-unused-vars */
 import logo from "../../assets/images/recipe-img.png";
-import { imageURL } from "../../services/aPiconfig";
 import Noimg from "../../assets/images/nodata.png";
 import { FaHeart } from "react-icons/fa";
 import { useDeleteFavorites, useFavorites } from "../../services/apiFavorites";
@@ -8,6 +7,7 @@ import Header from "../../shared/Header/Header";
 import Spinner from "../../shared/NoDate/Spinner";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { imageURL } from "../../services/aPiConfig";
 export default function Favorites() {
   const { dataFavorite, isPending } = useFavorites();
   const { DeleteFavorites } = useDeleteFavorites();
