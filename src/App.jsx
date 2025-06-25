@@ -10,7 +10,6 @@ import Recipedata from "./features/Recipes/RecipeDate/Recipedata";
 import Recipelist from "./features/Recipes/RecipeList/Recipelist";
 import Authlayout from "./shared/Authlayout/Authlayout";
 import Masterlayout from "./shared/MasterLayout/Masterlayout";
-import Notfound from "./shared/Notfound/Notfound";
 import UserList from "./features/user/UserList/UserList";
 import ProtectRoute from "./shared/ProtectRoute/ProtectRoute";
 import { AppFoodProvider } from "./context/AppFoodProvider";
@@ -19,6 +18,7 @@ import Favorites from "./features/Favorite/Favorites";
 import Profile from "./features/Profile/Profile";
 import Dashboard from "./features/Dashboard/Dashboard";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import NotFoundPage from "./shared/NotFoundPage/NotFoundPage";
 function App() {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -32,7 +32,7 @@ function App() {
     {
       path: "/",
       element: <Authlayout />,
-      errorElement: <Notfound />,
+      errorElement: <NotFoundPage />,
       children: [
         { index: true, element: <Login /> },
         { path: "Login", element: <Login /> },
@@ -49,7 +49,7 @@ function App() {
           <Masterlayout />
         </ProtectRoute>
       ),
-      errorElement: <Notfound />,
+      errorElement: <NotFoundPage />,
       children: [
         { index: true, element: <Dashboard /> },
         { path: "recipes", element: <Recipelist /> },

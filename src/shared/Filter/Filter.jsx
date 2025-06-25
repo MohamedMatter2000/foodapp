@@ -27,7 +27,7 @@ const Filter = ({
   onCategoryChange,
   selectedCategory = "",
 }) => {
-  const containerClasses = ` d-flex  gap-3 my-3 `;
+  const containerClasses = ` d-flex flex-sm-column  gap-3 my-3 flex-lg-row `;
   const processedInputs =
     inputs.length > 1 || !showSearch
       ? inputs

@@ -17,7 +17,7 @@ import { pathToFileObject, removeDuplicates } from "../../../utils/helpers";
 import Spinner from "../../../shared/NoDate/Spinner";
 import FormInput from "../../../shared/FormInput/FormInput";
 import ButtonFormInput from "../../../shared/FormInput/ButtonFormInput";
-import { imageURL } from "../../../services/aPiConfig";
+import { imageURL } from "../../../services/aPiconfig";
 import { useFoodApp } from "../../../context/AppFoodProvider";
 export default function Recipedata() {
   const moveBack = useMoveBack();

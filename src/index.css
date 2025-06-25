@@ -93,3 +93,31 @@ input {
 .paginations svg {
   margin-top: -4px;
 }
+.error-container {
+  animation: fadeInUp 0.8s ease-out;
+}
+.error-title {
+  font-size: 10rem;
+  font-weight: 900;
+  background: -webkit-linear-gradient(#0d6efd, #6f42c1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+.btn-primary {
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

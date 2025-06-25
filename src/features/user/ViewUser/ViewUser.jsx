@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import Modal from "react-bootstrap/Modal";
-import { imageURL } from "../../../services/aPiConfig";
+import { imageURL } from "../../../services/aPiconfig";
 const DEFAULT_AVATAR =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234f46e5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%237c3aed;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='60' cy='60' r='60' fill='url(%23grad)'/%3E%3Ccircle cx='60' cy='45' r='20' fill='white' opacity='0.9'/%3E%3Cpath d='M 25 95 Q 25 75 60 75 Q 95 75 95 95 Z' fill='white' opacity='0.9'/%3E%3C/svg%3E";
 export default function ViewUser({ show, data, onHide }) {

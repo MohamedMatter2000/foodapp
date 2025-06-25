@@ -69,7 +69,6 @@ export default function UserList() {
     });
   };
   const handleSelectRole = (e) => {
-    console.log(e.target.value);
     setfilteruser({
       ...filteruser,
       selectrole: e.target.value,
