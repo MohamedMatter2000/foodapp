@@ -18,7 +18,7 @@ import Spinner from "../../../shared/NoDate/Spinner";
 import FormInput from "../../../shared/FormInput/FormInput";
 import ButtonFormInput from "../../../shared/FormInput/ButtonFormInput";
 import { useFoodApp } from "../../../context/AppFoodProvider";
-import { imageURL } from "../../../services/aPiconfig";
+import { imageURL } from "../../../services/aPiConfig";
 export default function Recipedata() {
   const moveBack = useMoveBack();
   const { tagsData } = useFoodApp();
