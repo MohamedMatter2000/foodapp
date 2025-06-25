@@ -14,20 +14,22 @@ import ActionTable from "../../../shared/ActionTable/ActionTable";
 import Table from "../../../shared/ReusableTable/Table";
 import usePagination from "../../../hooks/usePagination";
 import useModal from "../../../hooks/useModal";
-import {
-  useDeleteRecipe,
-  useRecipes,
-  useTags,
-} from "../../../services/apiRecipe";
+import { useDeleteRecipe, useRecipes } from "../../../services/apiRecipe";
 import { useCategories } from "../../../services/apiCategory";
 import { removeDuplicates } from "../../../utils/helpers";
 import Filter from "../../../shared/Filter/Filter";
+import { toast } from "react-toastify";
+import { useAddFavorites, useFavorites } from "../../../services/apiFavorites";
+import { FaEye, FaHeart } from "react-icons/fa";
 export default function Recipelist() {
   const [recipeId, setrecipeId] = useState("");
   const navigate = useNavigate();
   const { isOpen, closeModal, openModal } = useModal();
   const { totalNumberOfRecords } = useCategories();
   const { usergroup, tagsData } = useFoodApp();
+  const { AddFavorites, isPending: isAdding } = useAddFavorites();
+  const { isDeleting, deleteRecipe } = useDeleteRecipe();
+  const { dataFavorite } = useFavorites();
   const [filterrecipe, setfilterrecipe] = useState({
     TagSelected: "",
     searchname: "",
@@ -49,7 +51,6 @@ export default function Recipelist() {
     { enabled: !!total }
   );
 
-  const { isDeleting, deleteRecipe } = useDeleteRecipe();
   function handleDeleteRecipe(id) {
     deleteRecipe(id, {
       onSuccess: () => {
@@ -102,7 +103,30 @@ export default function Recipelist() {
   function handleEditRecipe(id) {
     navigate(`/dashboard/recipes/${id}`);
   }
-  const columns = [
+  function addToFavorites(recipeId) {
+    const isAlreadyFavorite = dataFavorite?.some(
+      (favorite) => favorite.recipe.id === recipeId
+    );
+    if (isAlreadyFavorite) {
+      toast.info("This recipe is already in your favorites!");
+      return;
+    }
+    AddFavorites(recipeId, {
+      onSuccess: (data) => {
+        toast.success(
+          data?.message || "Recipe Added To Favorite  successfully!"
+        );
+      },
+      onError: (err) => {
+        toast.error(
+          err?.response?.data?.message ||
+            err.message ||
+            "Failed to Add To Favorites"
+        );
+      },
+    });
+  }
+  let columns = [
     {
       key: "id",
       title: "Id",
@@ -142,16 +166,30 @@ export default function Recipelist() {
     {
       key: "action",
       title: "Action",
-      render: (row) => (
-        <ActionTable
-          data={row}
-          onView={handleViewRecipe}
-          onDelete={handleViewDelete}
-          onEdit={handleEditRecipe}
-        />
-      ),
+      render: (row) =>
+        usergroup === "SystemUser" ? (
+          <div className="d-flex gap-3">
+            <span role="button" onClick={() => handleViewRecipe(row?.id)}>
+              <FaEye color="green" />
+            </span>
+            <span role="button" onClick={() => addToFavorites(row?.id)}>
+              <FaHeart color="green" />
+            </span>
+          </div>
+        ) : (
+          <ActionTable
+            data={row}
+            onView={handleViewRecipe}
+            onDelete={handleViewDelete}
+            onEdit={handleEditRecipe}
+          />
+        ),
     },
   ];
+  columns =
+    usergroup === "SystemUser"
+      ? columns.filter((col) => col.key !== "id")
+      : columns;
   let uniqueArray = removeDuplicates(Categories);
   return (
     <div>

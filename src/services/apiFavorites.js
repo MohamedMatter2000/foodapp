@@ -1,13 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useFoodApp } from "../context/AppFoodProvider";
 import { apiClient } from "./aPiConfig";
+
 export function useFavorites() {
-  const { data, isPaused } = useQuery({
+  const { usergroup } = useFoodApp();
+  const { data, isPending } = useQuery({
     queryKey: ["Favorites"],
     queryFn: () => {
       return apiClient("/userRecipe");
     },
+    enabled: usergroup === "SystemUser",
   });
-  return { data, isPaused };
+  const dataFavorite = data?.data;
+  return { dataFavorite, isPending };
 }
 export function useAddFavorites() {
   const queryClient = useQueryClient();
@@ -16,10 +21,11 @@ export function useAddFavorites() {
     isPending,
     isSuccess,
   } = useMutation({
-    mutationFn: (data) => {
+    mutationFn: (recipeId) => {
       return apiClient("/userRecipe", {
         method: "POST",
-        body: JSON.stringify(data),
+        data: { recipeId },
+        body: JSON.stringify({ recipeId }),
       });
     },
     onSuccess: () => {

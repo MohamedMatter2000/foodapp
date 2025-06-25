@@ -4,9 +4,11 @@ import React from "react";
 import { FaBell, FaUser } from "react-icons/fa";
 import { useFoodApp } from "../../context/AppFoodProvider";
 import { imageURL } from "../../services/aPiConfig";
+import { useCurrentUser } from "../../services/apiUser";
 export default function Navbar() {
-  const { loginData, CurrentUser } = useFoodApp();
-  const imageuser = CurrentUser?.userData?.imagePath;
+  const { loginData } = useFoodApp();
+  const { userData } = useCurrentUser();
+  const imageuser = userData?.imagePath;
   return (
     <div className="pt-1 pb-3">
       <nav className="navbar navbar-expand-lg bg-body-tertiary rounded-3">

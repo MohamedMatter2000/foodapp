@@ -51,8 +51,6 @@ export default function Categorieslist() {
       },
     });
   }
-  const { data } = useCategories();
-  console.log(data);
   const handleSearchName = (e) => {
     setSearchName(e.target.value);
   };

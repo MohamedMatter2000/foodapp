@@ -17,6 +17,15 @@ export default function Table({ data, columns, isLoading, message, error }) {
                 {column.title}
               </th>
             ))}
+            {/* {columns?.map((column) => (
+              <th
+                key={column.key}
+                scope="col"
+                className={`px-1 py-4 ${column.className || ""}`}
+              >
+                {column.title}
+              </th>
+            ))} */}
           </tr>
         </thead>
         <tbody>

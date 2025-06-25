@@ -1,16 +1,24 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { apiClient } from "./aPiConfig";
 export const useCurrentUser = () => {
+  const token = localStorage.getItem("token");
+  const queryClient = useQueryClient();
   const {
     data: userData,
     isPending,
     isSuccess,
   } = useQuery({
-    queryKey: ["currentUser"],
+    queryKey: ["currentUser", token],
     queryFn: () => apiClient("/Users/currentUser"),
-    enabled: !!localStorage.getItem("token"),
+    enabled: !!token,
   });
+  useEffect(() => {
+    if (!token) {
+      queryClient.removeQueries({ queryKey: ["currentUser"] });
+    }
+  }, [token, queryClient]);
   return { userData, isPending, isSuccess };
 };
 export const useUsers = (params = {}) => {

@@ -13,13 +13,8 @@ import ReusableForm from "../../shared/AuthForm/ReusableForm";
 import { getValidationRules } from "../../hooks/usevalidations";
 import { FormInput } from "../../shared/AuthForm/FormInput";
 import Spinner from "../../shared/NoDate/Spinner";
-import { useFoodApp } from "../../context/AppFoodProvider";
 export default function Profile() {
-  // const { userData, isPending, isSuccess } = useCurrentUser();
-  const { loginData, CurrentUser } = useFoodApp();
-  const userData = CurrentUser.userData;
-  const isSuccess = CurrentUser.isSuccess;
-  const isPending = CurrentUser.isPending;
+  const { userData, isPending, isSuccess } = useCurrentUser();
   const [imagePreview, setImagePreview] = useState(null);
   const navigate = useNavigate();
   const { Updateuser, isUpdating } = useUpdateCurrentUser();

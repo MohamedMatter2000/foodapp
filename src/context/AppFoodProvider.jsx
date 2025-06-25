@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useCurrentUser } from "../services/apiUser";
 import { useTags } from "../services/apiRecipe";
 const AppContext = createContext();
 function AppFoodProvider({ children }) {
@@ -17,17 +16,8 @@ function AppFoodProvider({ children }) {
       setLoginData(loginDataDecode);
     }
   };
-  const { userData, isPending, isSuccess } = useCurrentUser();
   const { data: tagsData } = useTags();
-  const CurrentUser = useMemo(
-    () => ({
-      userData,
-      isPending,
-      isSuccess,
-    }),
-    [userData, isPending, isSuccess]
-  );
-  const usergroup = CurrentUser?.userData?.group?.name;
+  const usergroup = loginData?.userGroup;
   useEffect(() => {
     if (localStorage.getItem("token")) {
       SaveLoginData();
@@ -39,7 +29,6 @@ function AppFoodProvider({ children }) {
         loginData,
         SaveLoginData,
         setLoginData,
-        CurrentUser,
         tagsData,
         usergroup,
       }}
